@@ -7,6 +7,7 @@ class UIController{
     static async openPage(pageModel){
         var container = document.getElementById("PageJS-main-content");
         container.addEventListener('transitionend', async (event) => {
+            container.innerHTML = "";
             await pageModel.initialize(container);
             container.classList.remove("pageJS-hidden-page");
             pageModel.container = container;
