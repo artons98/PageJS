@@ -38,7 +38,7 @@ async function loadAllFiles() {
       // JavaScript-bestand
       try {
         await loadScript(file);
-        console.log(file + " successfully loaded.");
+        //console.log(file + " successfully loaded.");
       } catch (error) {
         console.error(error);
       }
@@ -46,10 +46,10 @@ async function loadAllFiles() {
       // CSS-bestand
       loadCSS(file);
     } else {
-      console.warn(file + " not supported for loading.");
+      //console.warn(file + " not supported for loading.");
     }
   }
-  console.log("All files loaded.");
+  //console.log("All files loaded.");
 }
 
 // Start het laden van bestanden
