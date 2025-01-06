@@ -15,6 +15,7 @@ html.no-scroll, body.no-scroll {
   display: flex;
   justify-content: center;
   align-items: end;
+  transition: opacity 0.5s ease-in-out;
 }
 
 .pageJS-container {
@@ -30,8 +31,12 @@ html.no-scroll, body.no-scroll {
   background-color: var(--bs-light);
 }
 
-.hidden-modal {
+.pageJS-hidden-modal {
   transform: translateY(100%);
+}
+.pageJS-hidden-page {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .pageJS-container__title-bar {
@@ -102,7 +107,7 @@ html.no-scroll, body.no-scroll {
 }
 
 @media (min-width: 500px) {
-  .hidden-modal {
+  .pageJS-hidden-modal {
     transform: none;
     opacity: 0;
     pointer-events: 0;

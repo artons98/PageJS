@@ -1,9 +1,19 @@
 class UIController{
+    static currentPage = null;
     static stack = [];
     static baseID = "pageJSElement-";
     static originalThemeColor = null;
 
-
+    static async openPage(pageModel){
+        var container = document.getElementById("PageJS-main-content");
+        container.addEventListener('transitionend', async (event) => {
+            await pageModel.initialize(container);
+            container.classList.remove("pageJS-hidden-page");
+            pageModel.container = container;
+            this.currentPage = pageModel;
+        });
+        container.classList.add("pageJS-hidden-page");
+    }
     static async pushPageViewToStack(pageModel){
         if(this.stack.length < 1){
             var pageDiv = this.createPageDiv();
@@ -26,7 +36,7 @@ class UIController{
         var container = this.createContainerDiv(pageModel);
         this.stack[0].container.append(container);
         await pageModel.initialize(container.childNodes[1]);
-        container.classList.remove("hidden-modal");
+        container.classList.remove("pageJS-hidden-modal");
         pageModel.container = container;
         this.stack.push(pageModel);
         
@@ -46,7 +56,7 @@ class UIController{
                 document.body.classList.remove('no-scroll');
             }
         });
-        element.classList.add("hidden-modal");
+        element.classList.add("pageJS-hidden-modal");
         if(this.stack.length > 1){
             this.reInitialize();
         }
@@ -74,7 +84,7 @@ class UIController{
     static createContainerDiv(pageModel) {
         var container = document.createElement('div');
         container.id = this.baseID + (this.stack.length + 1).toString();
-        container.classList.add("pageJS-container", "hidden-modal");
+        container.classList.add("pageJS-container", "pageJS-hidden-modal");
     
         var titleBar = document.createElement('div');
         titleBar.classList.add("pageJS-container__title-bar");
