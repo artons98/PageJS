@@ -137,3 +137,21 @@ html.no-scroll, body.no-scroll {
     padding-left: 0.4rem;
   }
 }
+
+/* Light theme */
+@media (prefers-color-scheme: light) {
+  .pageJS-container,
+  .pageJS-container__title-bar,
+  .pageJS-container__content {
+    background-color: var(--bs-light);
+  }
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+  .pageJS-container,
+  .pageJS-container__title-bar,
+  .pageJS-container__content {
+    background-color: var(--bs-dark);
+  }
+}
