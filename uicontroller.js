@@ -55,6 +55,7 @@ class UIController{
         await pageModel.initialize(container.childNodes[1]);
         container.classList.remove("pageJS-hidden-modal");
         pageModel.container = container;
+        this.stack[this.stack.length - 1].container.classList.add("pageJS-partially-hidden");
         this.stack.push(pageModel);
         
     }
@@ -71,6 +72,9 @@ class UIController{
                 }
                 document.documentElement.classList.remove('no-scroll'); 
                 document.body.classList.remove('no-scroll');
+            }
+            else{
+                this.stack[this.stack.length - 1].container.classList.remove("pageJS-partially-hidden");
             }
         });
         element.classList.add("pageJS-hidden-modal");
