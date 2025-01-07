@@ -5,14 +5,30 @@ class UIController{
     static originalThemeColor = null;
 
     static async openPage(pageModel){
-        var container = document.getElementById("PageJS-main-content");
-        container.addEventListener('transitionend', async (event) => {
+        const container = document.getElementById("PageJS-main-content");
+        // container.addEventListener('transitionend', async (event) => {
+        //     container.innerHTML = "";
+        //     await pageModel.initialize(container);
+        //     container.classList.remove("pageJS-hidden-page");
+        //     pageModel.container = container;
+        //     this.currentPage = pageModel;
+        // });
+        const onTransitionEnd = async (event) => {
+            // Controleer of het event afkomstig is van de juiste container
+            if (event.target !== container) return;
+    
+            // Verwijder de eventlistener om herhaald uitvoeren te voorkomen
+            container.removeEventListener("transitionend", onTransitionEnd);
+    
+            // Leeg de container en laad de nieuwe pagina
             container.innerHTML = "";
             await pageModel.initialize(container);
             container.classList.remove("pageJS-hidden-page");
-            pageModel.container = container;
             this.currentPage = pageModel;
-        });
+        };
+    
+        // Voeg de eventlistener toe
+        container.addEventListener("transitionend", onTransitionEnd);
         container.classList.add("pageJS-hidden-page");
     }
     static async pushPageViewToStack(pageModel){
