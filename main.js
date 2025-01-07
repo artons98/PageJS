@@ -1,19 +1,18 @@
-// URL van de GitHub-repo via jsDelivr
 const BASE_URL = "https://cdn.jsdelivr.net/gh/artons98/PageJS/";
 
-// Lijst van bestanden in je project
 const FILES = [
   "modalpage.js",  
   "page.js",
   "uicontroller.js",
   "css/pageJS.css",
+  "https://kit.fontawesome.com/08661490f4.js", // Externe Font Awesome script
 ];
 
-// Functie om een script te laden
 function loadScript(file) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = BASE_URL + file;
+    // Gebruik BASE_URL alleen voor lokale bestanden
+    script.src = file.startsWith("http") ? file : BASE_URL + file;
     script.type = "text/javascript";
     script.onload = () => resolve(file + " loaded.");
     script.onerror = () => reject(new Error(file + " failed to load."));
@@ -21,11 +20,11 @@ function loadScript(file) {
   });
 }
 
-// Functie om een CSS-bestand te laden
 function loadCSS(file) {
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = BASE_URL + file;
+  // Gebruik BASE_URL alleen voor lokale bestanden
+  link.href = file.startsWith("http") ? file : BASE_URL + file;
   document.head.appendChild(link);
   console.log(file + " CSS loaded.");
 }
