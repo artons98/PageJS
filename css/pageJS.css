@@ -98,13 +98,23 @@ html.no-scroll, body.no-scroll {
 
 @media (min-width: 500px) {
   .pageJS-container {
+    height: auto; /* Hoogte past zich aan de inhoud aan */
+    max-height: 90vh; /* Blijf binnen de limiet van 90% van het venster */
+    width: 100vw;
+    max-width: 1200px;
+    border-radius: 2rem;
+    overflow: hidden; /* Zorg ervoor dat inhoud niet uitsteekt */
+  }
+}
+/* @media (min-width: 500px) {
+  .pageJS-container {
     height: 90vh;
     max-height: 90vh;
     width: 100vw;
     max-width: 1200px;
     border-radius: 2rem;
   }
-}
+} */
 
 @media (min-width: 500px) {
   .pageJS-hidden-modal {
