@@ -1,17 +1,20 @@
 class PageView{
-    constructor(title, viewModel, htmlPath, container = null) {
+    constructor(title, viewModel, htmlPath, container = null, reInitialiseOnClose = true) {
         this.title = title;
         this.viewModel = viewModel;
         this.htmlPath = htmlPath;
         this.container = container;
         this.rootElement = null;
+        this.reInitialiseOnClose = reInitialiseOnClose;
     }
     async initialize(rootElement = this.rootElement){
+        UIController.toggleActivityIndicator(true);
         this.rootElement = rootElement;
         if (!this.rootElement.hasChildNodes()) {
             await this.addHTML(this.rootElement);
         }
         await this.onAppearing();
+        UIController.toggleActivityIndicator(false);
         return;
     }
     async onAppearing() {

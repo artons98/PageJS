@@ -3,37 +3,25 @@ class UIController{
     static stack = [];
     static baseID = "pageJSElement-";
     static originalThemeColor = null;
+    static activityIndicatorContainer = null;
 
     static async openPage(pageModel){
         const container = document.getElementById("PageJS-main-content");
-        // container.addEventListener('transitionend', async (event) => {
-        //     container.innerHTML = "";
-        //     await pageModel.initialize(container);
-        //     container.classList.remove("pageJS-hidden-page");
-        //     pageModel.container = container;
-        //     this.currentPage = pageModel;
-        // });
         const onTransitionEnd = async (event) => {
-            // Controleer of het event afkomstig is van de juiste container
             if (event.target !== container) return;
-    
-            // Verwijder de eventlistener om herhaald uitvoeren te voorkomen
+
             container.removeEventListener("transitionend", onTransitionEnd);
-    
-            // Leeg de container en laad de nieuwe pagina
             container.innerHTML = "";
             await pageModel.initialize(container);
             container.classList.remove("pageJS-hidden-page");
             this.currentPage = pageModel;
         };
-    
-        // Voeg de eventlistener toe
         container.addEventListener("transitionend", onTransitionEnd);
         container.classList.add("pageJS-hidden-page");
     }
     static async pushPageViewToStack(pageModel){
         if(this.stack.length < 1){
-            var pageDiv = this.createPageDiv();
+            const pageDiv = this.createPageDiv();
             document.body.append(pageDiv);
             pageDiv.style.zIndex = this.getHighestZIndex() + 1;
             this.stack.push(new PageView("", null, "", pageDiv));
@@ -49,19 +37,24 @@ class UIController{
             document.body.classList.add('no-scroll');
 
             history.pushState(null, 'Popup Open', '');
+            pageDiv.classList.remove('pageJS-hidden-page');
         }
-        var container = this.createContainerDiv(pageModel);
+        const container = this.createContainerDiv(pageModel);
         this.stack[0].container.append(container);
         await pageModel.initialize(container.childNodes[1]);
         container.classList.remove("pageJS-hidden-modal");
         pageModel.container = container;
-        this.stack[this.stack.length - 1].container.classList.add("pageJS-partially-hidden");
+        if(this.stack.length > 1){
+            this.stack[this.stack.length - 1].container.classList.add("pageJS-partially-hidden");
+        }
         this.stack.push(pageModel);
         
     }
-    static popView(){
-        var element = (this.stack.pop()).container;
-        element.addEventListener('transitionend', (event) => {
+    static popView(reInitialize = true){
+        const element = (this.stack.pop()).container;
+        const onTransitionEnd = async (event) => {
+            if (event.target !== element) return;
+            element.removeEventListener("transitionend", onTransitionEnd);
             element.remove();
             if(this.stack.length === 1){
                 this.popView();
@@ -72,18 +65,24 @@ class UIController{
                 }
                 document.documentElement.classList.remove('no-scroll'); 
                 document.body.classList.remove('no-scroll');
+                if(this.currentPage !== null){
+                    this.reInitialize(this.currentPage);
+                }
             }
             else{
-                this.stack[this.stack.length - 1].container.classList.remove("pageJS-partially-hidden");
+                if(this.stack.length > 0){
+                    this.stack[this.stack.length - 1].container.classList.remove("pageJS-partially-hidden");
+                }
             }
-        });
+        };
+        element.addEventListener("transitionend", onTransitionEnd);
         element.classList.add("pageJS-hidden-modal");
-        if(this.stack.length > 1){
-            this.reInitialize();
+        if(this.stack.length > 1 && reInitialize){
+            this.reInitialize(this.stack[this.stack.length - 1]);
         }
     }
-    static reInitialize(){
-        const pageModel = this.stack[this.stack.length - 1];
+    static reInitialize(pageModel){
+        // const pageModel = this.stack[this.stack.length - 1];
         pageModel.viewModel = new (Object.getPrototypeOf(pageModel.viewModel).constructor)();
         if(pageModel.rootElement){
             pageModel.rootElement.innerHTML = "";
@@ -97,32 +96,38 @@ class UIController{
     }
     
     static createPageDiv(){
-        var element = document.createElement('div');
+        const element = document.createElement('div');
         element.id = "overlay";
         element.classList.add("pageJS-page");
+        element.classList.add("pageJS-hidden-page");
         return element;
     }
     static createContainerDiv(pageModel) {
-        var container = document.createElement('div');
+        const container = document.createElement('div');
         container.id = this.baseID + (this.stack.length + 1).toString();
         container.classList.add("pageJS-container", "pageJS-hidden-modal");
     
-        var titleBar = document.createElement('div');
+        const titleBar = document.createElement('div');
         titleBar.classList.add("pageJS-container__title-bar");
         container.append(titleBar);
     
-        var title = document.createElement("h4");
+        const title = document.createElement("h4");
         title.classList.add("pageJS-container__title");
         title.innerText = pageModel.title;
         titleBar.append(title);
     
-        var closeButton = document.createElement('button');
+        const closeButton = document.createElement('button');
         closeButton.classList.add("btn", "btn-primary", "text-light", "icon-button", "pageJS-container__close-button");
         closeButton.setAttribute("type", "button");
-        closeButton.setAttribute("onclick", "UIController.popView();");
+        if(pageModel.reInitialiseOnClose){
+            closeButton.setAttribute("onclick", "UIController.popView();");
+        }
+        else{
+            closeButton.setAttribute("onclick", "UIController.popView(false);");
+        }
         titleBar.append(closeButton);
     
-        var content = document.createElement('div');
+        const content = document.createElement('div');
         content.classList.add("pageJS-container__content");
         container.append(content);
     
@@ -144,5 +149,34 @@ class UIController{
     static handlePopState(event) {
         this.popView();
         event.preventDefault();
+    }
+    static toggleActivityIndicator(show = null) {
+        const isCurrentlyVisible = !!this.activityIndicatorContainer;
+    
+        if (show === null) {
+            show = !isCurrentlyVisible;
+        }
+    
+        if (show && !isCurrentlyVisible) {
+            this.activityIndicatorContainer = document.createElement('div');
+            this.activityIndicatorContainer.classList.add("pageJS-loader-container");
+            this.activityIndicatorContainer.classList.add("pageJS-hidden-page");
+            document.body.append(this.activityIndicatorContainer);
+            this.activityIndicatorContainer.style.zIndex = this.getHighestZIndex() + 1;
+    
+            const activityIndicator = document.createElement('span');
+            activityIndicator.classList.add('pageJS-loader');
+            this.activityIndicatorContainer.append(activityIndicator);
+            this.activityIndicatorContainer.classList.remove("pageJS-hidden-page");
+        } else if (!show && isCurrentlyVisible) {
+            const onTransitionEnd = async (event) => {
+                if (event.target !== this.activityIndicatorContainer) return;
+                this.activityIndicatorContainer.removeEventListener("transitionend", onTransitionEnd);
+                this.activityIndicatorContainer.remove();
+                this.activityIndicatorContainer = null;
+            };
+            this.activityIndicatorContainer.addEventListener("transitionend", onTransitionEnd);
+            this.activityIndicatorContainer.classList.add("pageJS-hidden-page");
+        }
     }
 }
