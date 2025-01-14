@@ -50,6 +50,37 @@ class UIController{
         this.stack.push(pageModel);
         
     }
+    static async pushConfirmViewToStack(ConfirmView){
+        if(this.stack.length < 1){
+            const pageDiv = this.createPageDiv();
+            document.body.append(pageDiv);
+            pageDiv.style.zIndex = this.getHighestZIndex() + 1;
+            this.stack.push(new PageView("", null, "", pageDiv));
+
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) {
+                this.originalThemeColor = metaThemeColor.getAttribute('content');
+                metaThemeColor.setAttribute('content', '#000000');
+            }
+            
+            document.getElementsByTagName('nav')[0].classList.add('hidden');
+            document.documentElement.classList.add('no-scroll'); 
+            document.body.classList.add('no-scroll');
+
+            history.pushState(null, 'Popup Open', '');
+            pageDiv.classList.remove('pageJS-hidden-page');
+        }
+        const container = this.createConfirmContainerDiv(ConfirmView);
+        this.stack[0].container.append(container);
+        await ConfirmView.initialize(container.childNodes[1]);
+        container.classList.remove("pageJS-hidden-modal");
+        ConfirmView.container = container;
+        if(this.stack.length > 1){
+            this.stack[this.stack.length - 1].container.classList.add("pageJS-partially-hidden");
+        }
+        this.stack.push(ConfirmView);
+        
+    }
     static popView(reInitialize = true){
         const element = (this.stack.pop()).container;
         const onTransitionEnd = async (event) => {
@@ -133,6 +164,43 @@ class UIController{
     
         return container;
     }
+    static createConfirmContainerDiv(pageModel) {
+        const container = document.createElement('div');
+        container.id = this.baseID + (this.stack.length + 1).toString();
+        container.classList.add("pageJS-container", "pageJS-hidden-modal");
+    
+        const titleBar = document.createElement('div');
+        titleBar.classList.add("pageJS-container__title-bar");
+        container.append(titleBar);
+    
+        const title = document.createElement("h4");
+        title.classList.add("pageJS-container__title");
+        title.innerText = pageModel.title;
+        titleBar.append(title);
+    
+        const closeButton = document.createElement('button');
+        closeButton.classList.add("btn", "btn-primary", "text-light", "icon-button", "pageJS-container__close-button");
+        closeButton.setAttribute("type", "button");
+        closeButton.setAttribute("onclick", "UIController.popView(false);");
+        titleBar.append(closeButton);
+
+        const confirmButton = document.createElement('button');
+        confirmButton.classList.add("btn", "btn-primary", "text-light", "icon-button", "pageJS-container__confirm-button");
+        confirmButton.setAttribute("type", "button");
+        if(pageModel.reInitialiseOnClose){
+            confirmButton.setAttribute("onclick", "UIController.handleConfirmed();");
+        }
+        else{
+            confirmButton.setAttribute("onclick", "UIController.handleConfirmed(false);");
+        }
+        titleBar.append(confirmButton);
+    
+        const content = document.createElement('div');
+        content.classList.add("pageJS-container__content");
+        container.append(content);
+    
+        return container;
+    }
     static getHighestZIndex() {
         let highestZIndex = 0;
     
@@ -149,6 +217,10 @@ class UIController{
     static handlePopState(event) {
         this.popView();
         event.preventDefault();
+    }
+    static handleConfirmed(){
+        this.stack[this.stack.length - 1].callback();
+        this.popView(this.stack[this.stack.length - 1].reInitialiseOnClose);
     }
     static toggleActivityIndicator(show = null) {
         const isCurrentlyVisible = !!this.activityIndicatorContainer;

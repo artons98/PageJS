@@ -1,4 +1,4 @@
-const BASE_URL = "https://cdn.jsdelivr.net/gh/artons98/PageJS/";
+const BASE_URL = "https://techniekleren.aprize.nl/PageJS/";
 
 const FILES = [
   "modalpage.js",  

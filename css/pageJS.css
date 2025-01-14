@@ -1,6 +1,6 @@
 html.no-scroll, body.no-scroll {
   overflow: hidden;
-}    
+}  
 
 :root {
   --pageJS-transition-duration: 0.3s;
@@ -81,13 +81,36 @@ html.no-scroll, body.no-scroll {
   height: 2rem;
   width: 2rem;
   /*float: right;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0;
 }
 
 .pageJS-container__close-button::before {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
+  color: white;
   content: "\f00d";
+}
+
+.pageJS-container__confirm-button {
+  border-radius: 50vw;
+  height: 2rem;
+  width: 2rem;
+  margin-left: 1rem;
+  /*float: right;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.pageJS-container__confirm-button::before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  color: white;
+  content: "\f00c";
 }
 
 /* .pageJS-container__close-button > i {
@@ -95,7 +118,7 @@ html.no-scroll, body.no-scroll {
   width: 100%;
 } */
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-page {
     display: flex;
     justify-content: center;
@@ -104,7 +127,7 @@ html.no-scroll, body.no-scroll {
   }
 }
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-container {
     height: auto; /* Hoogte past zich aan de inhoud aan */
     max-height: 90vh; /* Blijf binnen de limiet van 90% van het venster */
@@ -112,9 +135,11 @@ html.no-scroll, body.no-scroll {
     max-width: 1200px;
     border-radius: 2rem;
     overflow: hidden; /* Zorg ervoor dat inhoud niet uitsteekt */
+    display: flex;
+    flex-direction: column;
   }
 }
-/* @media (min-width: 500px) {
+/* @media (min-width: 576px) {
   .pageJS-container {
     height: 90vh;
     max-height: 90vh;
@@ -124,7 +149,7 @@ html.no-scroll, body.no-scroll {
   }
 } */
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-hidden-modal {
     transform: none;
     opacity: 0;
@@ -132,7 +157,7 @@ html.no-scroll, body.no-scroll {
   }
 }
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-container__title-bar {
     background-color: var(--bs-light);
     height: 3rem;
@@ -140,15 +165,16 @@ html.no-scroll, body.no-scroll {
   }
 }
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-container__content {
     margin: 1rem;
     border-radius: 1rem;
     max-height: calc(100% - 5rem);
+    overflow: hidden;
   }
 }
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-container__title {
     width: 100%;
     color: var(--bs-primary);
