@@ -45,8 +45,9 @@ html.no-scroll, body.no-scroll {
 .pageJS-partially-hidden{
   transition: filter var(--pageJS-transition-duration) ease-in-out;
   pointer-events: none;
-  filter: brightness(0.125);
-  filter: blur(2.5px);
+  /* filter: brightness(0.125);
+  filter: blur(2.5px); */
+  filter: brightness(0.125) blur(2.5px);
 }
 
 .pageJS-container__title-bar {
