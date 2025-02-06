@@ -29,7 +29,7 @@ html.no-scroll, body.no-scroll {
   width: 100vw;
   max-width: 100vw;
   border-radius: 1rem 1rem 0 0;
-  transition: transform var(--pageJS-transition-duration) ease-in-out, opacity var(--pageJS-transition-duration) ease-in-out;
+  transition: height var(--pageJS-transition-duration) ease-in-out, transform var(--pageJS-transition-duration) ease-in-out, opacity var(--pageJS-transition-duration) ease-in-out;
   overflow: hidden;
   /*overflow-y: scroll;*/
   background-color: var(--bs-light);
@@ -45,8 +45,8 @@ html.no-scroll, body.no-scroll {
 .pageJS-partially-hidden{
   transition: filter var(--pageJS-transition-duration) ease-in-out;
   pointer-events: none;
-  /* filter: brightness(0.125); */
-  filter: blur(5px);
+  filter: brightness(0.125);
+  filter: blur(2.5px);
 }
 
 .pageJS-container__title-bar {
