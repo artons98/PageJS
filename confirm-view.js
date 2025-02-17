@@ -1,8 +1,9 @@
-class PageView{
-    constructor(title, viewModel, htmlPath, container = null, reInitialiseOnClose = true) {
+class ConfirmView{
+    constructor(title, viewModel, htmlPath, callback, container = null, reInitialiseOnClose = true) {
         this.title = title;
         this.viewModel = viewModel;
         this.htmlPath = htmlPath;
+        this.callback = callback;
         this.container = container;
         this.rootElement = null;
         this.reInitialiseOnClose = reInitialiseOnClose;

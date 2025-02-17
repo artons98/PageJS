@@ -1,31 +1,35 @@
 html.no-scroll, body.no-scroll {
   overflow: hidden;
+}  
+
+:root {
+  --pageJS-transition-duration: 0.3s;
 }
 
 .pageJS-page {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100%;
-  max-height: 100%;
-  width: 100%;
-  max-width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  width: 100dvw;
+  max-width: 100dvw;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.90);
   display: flex;
   justify-content: center;
   align-items: end;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity var(--pageJS-transition-duration) ease-in-out;
 }
 
 .pageJS-container {
   position: fixed;
-  height: 100vh;
-  max-height: 100vh;
-  width: 100vw;
-  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  width: 100dvw;
+  max-width: 100dvw;
   border-radius: 1rem 1rem 0 0;
-  transition: transform 0.3s ease-in-out;
+  transition: height var(--pageJS-transition-duration) ease-in-out, transform var(--pageJS-transition-duration) ease-in-out, opacity var(--pageJS-transition-duration) ease-in-out;
   overflow: hidden;
   /*overflow-y: scroll;*/
   background-color: var(--bs-light);
@@ -39,9 +43,11 @@ html.no-scroll, body.no-scroll {
   pointer-events: none;
 }
 .pageJS-partially-hidden{
-  transition: transform 0.3s ease-in-out;
-  opacity: 0.5;
+  transition: filter var(--pageJS-transition-duration) ease-in-out;
   pointer-events: none;
+  /* filter: brightness(0.125);
+  filter: blur(2.5px); */
+  filter: brightness(0.125) blur(2.5px);
 }
 
 .pageJS-container__title-bar {
@@ -73,17 +79,40 @@ html.no-scroll, body.no-scroll {
 }
 
 .pageJS-container__close-button {
-  border-radius: 50vw;
+  border-radius: 50dvw;
   height: 2rem;
   width: 2rem;
   /*float: right;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0;
 }
 
 .pageJS-container__close-button::before {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
+  color: white;
   content: "\f00d";
+}
+
+.pageJS-container__confirm-button {
+  border-radius: 50dvw;
+  height: 2rem;
+  width: 2rem;
+  margin-left: 1rem;
+  /*float: right;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.pageJS-container__confirm-button::before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  color: white;
+  content: "\f00c";
 }
 
 /* .pageJS-container__close-button > i {
@@ -91,37 +120,38 @@ html.no-scroll, body.no-scroll {
   width: 100%;
 } */
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 1;
-    transition: opacity 0.5s ease-in-out;
+    transition: opacity var(--pageJS-transition-duration) ease-in-out;
   }
 }
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-container {
     height: auto; /* Hoogte past zich aan de inhoud aan */
-    max-height: 90vh; /* Blijf binnen de limiet van 90% van het venster */
-    width: 100vw;
+    max-height: 90dvh; /* Blijf binnen de limiet van 90% van het venster */
+    width: 100dvw;
     max-width: 1200px;
     border-radius: 2rem;
     overflow: hidden; /* Zorg ervoor dat inhoud niet uitsteekt */
+    display: flex;
+    flex-direction: column;
   }
 }
-/* @media (min-width: 500px) {
+/* @media (min-width: 576px) {
   .pageJS-container {
-    height: 90vh;
-    max-height: 90vh;
-    width: 100vw;
+    height: 90dvh;
+    max-height: 90dvh;
+    width: 100dvw;
     max-width: 1200px;
     border-radius: 2rem;
   }
 } */
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-hidden-modal {
     transform: none;
     opacity: 0;
@@ -129,7 +159,7 @@ html.no-scroll, body.no-scroll {
   }
 }
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-container__title-bar {
     background-color: var(--bs-light);
     height: 3rem;
@@ -137,15 +167,16 @@ html.no-scroll, body.no-scroll {
   }
 }
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-container__content {
     margin: 1rem;
     border-radius: 1rem;
     max-height: calc(100% - 5rem);
+    overflow: hidden;
   }
 }
 
-@media (min-width: 500px) {
+@media (min-width: 576px) {
   .pageJS-container__title {
     width: 100%;
     color: var(--bs-primary);
@@ -153,8 +184,7 @@ html.no-scroll, body.no-scroll {
   }
 }
 
-/* Light theme */
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   .pageJS-container,
   .pageJS-container__title-bar,
   .pageJS-container__content {
@@ -162,11 +192,93 @@ html.no-scroll, body.no-scroll {
   }
 }
 
-/* Dark theme */
 @media (prefers-color-scheme: dark) {
   .pageJS-container,
   .pageJS-container__title-bar,
   .pageJS-container__content {
     background-color: var(--bs-dark);
+  }
+} */
+
+html.light-theme .pageJS-container,
+html.light-theme .pageJS-container__title-bar,
+html.light-theme .pageJS-container__content {
+    background-color: var(--bs-light);
+}
+
+html.dark-theme .pageJS-container,
+html.dark-theme .pageJS-container__title-bar,
+html.dark-theme .pageJS-container__content {
+    background-color: var(--bs-dark);
+}
+
+.pageJS-loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.90);
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  transition: opacity var(--pageJS-transition-duration) ease-in-out;
+  align-items: center;
+  justify-content: center;
+}
+.pageJS-loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  border: 3px solid;
+  border-color: #FFF #FFF transparent transparent;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+.pageJS-loader::after,
+.pageJS-loader::before {
+  content: '';  
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  border: 3px solid;
+  border-color: transparent transparent var(--bs-primary) var(--bs-secondary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: rotationBack 0.5s linear infinite;
+  transform-origin: center center;
+}
+.pageJS-loader::before {
+  width: 32px;
+  height: 32px;
+  border-color: #FFF #FFF transparent transparent;
+  animation: rotation 1.5s linear infinite;
+}
+    
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
+@keyframes rotationBack {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
   }
 }
