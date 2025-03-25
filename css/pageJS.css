@@ -97,11 +97,7 @@ html.no-scroll, body.no-scroll {
 }
 
 .pageJS-container__confirm-button {
-<<<<<<< HEAD
   border-radius: 50dvw;
-=======
-  border-radius: 50vw;
->>>>>>> cd03343b23c6c2276fb1717d26eb8b52d306c416
   height: 2rem;
   width: 2rem;
   margin-left: 1rem;

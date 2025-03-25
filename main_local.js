@@ -2,11 +2,12 @@ const BASE_URL = `${window.location.protocol}//${window.location.host}` + "/Page
 
 const FILES = [
   "modalpage.js",  
-  "page.js",
+  "page-view.js",
   "confirm-view.js",
   "uicontroller.js",
   "css/pageJS.css",
   "https://kit.fontawesome.com/08661490f4.js", // Externe Font Awesome script
+  "Startup.js",
 ];
 
 function loadScript(file) {
