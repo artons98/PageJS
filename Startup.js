@@ -4,7 +4,7 @@ const waitForFunction = (name, callback, timeout = 10000) => {
   
     const check = () => {
       if (typeof window[name] === 'function') {
-        console.log(`Functie ${name} is beschikbaar!`);
+        console.log(`Functie ${name} is beschikbaar en wordt uitgevoerd!`);
         clearInterval(timer);
         callback(window[name]);
       } else if (waited >= timeout) {

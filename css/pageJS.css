@@ -16,6 +16,7 @@ html.no-scroll, body.no-scroll {
   max-width: 100dvw;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.90);
+  backdrop-filter: blur(2.5px) saturate(180%);;
   display: flex;
   justify-content: center;
   align-items: end;
@@ -45,9 +46,7 @@ html.no-scroll, body.no-scroll {
 .pageJS-partially-hidden{
   transition: filter var(--pageJS-transition-duration) ease-in-out;
   pointer-events: none;
-  /* filter: brightness(0.125);
-  filter: blur(2.5px); */
-  filter: brightness(0.125) blur(2.5px);
+  filter: brightness(0.125) blur(2.5px) saturate(180%);;
 }
 
 .pageJS-container__title-bar {
