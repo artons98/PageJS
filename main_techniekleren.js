@@ -7,7 +7,7 @@ const FILES = [
   "uicontroller.js",
   "css/pageJS.css",
   "https://kit.fontawesome.com/08661490f4.js", // Externe Font Awesome script
-  "Startup.js",
+  "startup.js",
 ];
 
 function loadScript(file) {

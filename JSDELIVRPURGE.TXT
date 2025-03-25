@@ -3,6 +3,8 @@ https://cdn.jsdelivr.net/gh/artons98/PageJS/main_local.js
 https://cdn.jsdelivr.net/gh/artons98/PageJS/main_techniekleren.js
 https://cdn.jsdelivr.net/gh/artons98/PageJS/css/pageJS.css
 https://cdn.jsdelivr.net/gh/artons98/PageJS/page-view.js
-https://cdn.jsdelivr.net/gh/artons98/PageJS/Startup.js
+https://cdn.jsdelivr.net/gh/artons98/PageJS/startup.js
+https://cdn.jsdelivr.net/gh/artons98/PageJS/confirm-view.js
+https://cdn.jsdelivr.net/gh/artons98/PageJS/uicontroller.js
 
 
