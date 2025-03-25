@@ -26,7 +26,7 @@ class ConfirmView{
             if (this.viewModel) {
                 ko.applyBindings(this.viewModel, this.rootElement);
             } else {
-                console.error('Geen viewModel beschikbaar voor binding.');
+                console.error('[PageJS] Geen viewModel beschikbaar voor binding.');
             }
         }
     }
@@ -51,7 +51,7 @@ class ConfirmView{
             rootElement.innerHTML = "";
             rootElement.append(targetDiv);
         } else {
-            console.warn(`Div met id "${fileName}" niet gevonden in het HTML-bestand.`);
+            console.warn(`[PageJS] Div met id "${fileName}" niet gevonden in het HTML-bestand.`);
         }
     
         return;

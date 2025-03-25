@@ -13,7 +13,6 @@ const FILES = [
 function loadScript(file) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    // Gebruik BASE_URL alleen voor lokale bestanden
     script.src = file.startsWith("http") ? file : BASE_URL + file;
     script.type = "text/javascript";
     script.onload = () => resolve(file + " loaded.");
@@ -25,32 +24,23 @@ function loadScript(file) {
 function loadCSS(file) {
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  // Gebruik BASE_URL alleen voor lokale bestanden
   link.href = file.startsWith("http") ? file : BASE_URL + file;
   document.head.appendChild(link);
-  console.log(file + " CSS loaded.");
 }
 
 // Dynamisch bestanden laden
 async function loadAllFiles() {
-  console.log("PageJS is loading files...");
   for (const file of FILES) {
     if (file.endsWith(".js")) {
-      // JavaScript-bestand
       try {
         await loadScript(file);
-        //console.log(file + " successfully loaded.");
       } catch (error) {
-        console.error(error);
+        console.error('[PageJS] Error loading file:', error);
       }
     } else if (file.endsWith(".css")) {
-      // CSS-bestand
       loadCSS(file);
-    } else {
-      //console.warn(file + " not supported for loading.");
     }
   }
-  //console.log("All files loaded.");
 }
 
 // Start het laden van bestanden

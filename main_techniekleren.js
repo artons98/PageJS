@@ -28,12 +28,10 @@ function loadCSS(file) {
   // Gebruik BASE_URL alleen voor lokale bestanden
   link.href = file.startsWith("http") ? file : BASE_URL + file;
   document.head.appendChild(link);
-  console.log(file + " CSS loaded.");
 }
 
 // Dynamisch bestanden laden
 async function loadAllFiles() {
-  console.log("PageJS is loading files...");
   for (const file of FILES) {
     if (file.endsWith(".js")) {
       // JavaScript-bestand
@@ -41,7 +39,7 @@ async function loadAllFiles() {
         await loadScript(file);
         //console.log(file + " successfully loaded.");
       } catch (error) {
-        console.error(error);
+        console.error('[PageJS] Error loading file:', error);
       }
     } else if (file.endsWith(".css")) {
       // CSS-bestand

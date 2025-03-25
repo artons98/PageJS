@@ -118,11 +118,11 @@ class UIController{
         if(pageModel.rootElement){
             pageModel.rootElement.innerHTML = "";
             pageModel.initialize(pageModel.rootElement);
-            console.log('Back in view! reinitializing page...');
+            console.log('[PageJS] Reinitializing page...');
         }
         else{
-            console.log("pageModel was undefined or empty...");
-            console.log(pageModel);
+            console.warn('[PageJS] pageModel is undefined or empty.');
+            console.warn('[PageJS] pageModel:', pageModel);
         }
     }
     
