@@ -15,8 +15,9 @@ html.no-scroll, body.no-scroll {
   width: 100dvw;
   max-width: 100dvw;
   overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.90);
-  backdrop-filter: blur(2.5px) saturate(180%);;
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  background-color: transparent;
+  backdrop-filter: brightness(0.125) blur(2.5px) saturate(180%);;
   display: flex;
   justify-content: center;
   align-items: end;
