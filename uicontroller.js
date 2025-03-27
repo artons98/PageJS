@@ -108,7 +108,11 @@ class UIController{
         };
         element.addEventListener("transitionend", onTransitionEnd);
         element.classList.add("pageJS-hidden-modal");
-        if(this.stack.length > 1 && reInitialize){
+        // if(this.stack.length > 1 && reInitialize){
+        //     this.reInitialize(this.stack[this.stack.length - 1]);
+        // }
+        //just a test!
+        if(reInitialize){
             this.reInitialize(this.stack[this.stack.length - 1]);
         }
     }
