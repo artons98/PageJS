@@ -114,6 +114,12 @@ class UIController{
         if(this.stack.length > 1 && reInitialize){
             this.reInitialize(this.stack[this.stack.length - 1]);
         }
+        else if(this.stack.length == 0 && reInitialize){
+            if (typeof OnAppearing === 'function') {
+                console.log(`[PageJS] Functie OnAppearing is beschikbaar en wordt uitgevoerd!`);
+                OnAppearing();
+            }
+        }
     }
     static reInitialize(pageModel){
         // const pageModel = this.stack[this.stack.length - 1];
