@@ -19,6 +19,9 @@ class UIController{
         container.addEventListener("transitionend", onTransitionEnd);
         container.classList.add("pageJS-hidden-page");
     }
+    static async pushSelfToStack(viewModel){
+        this.stack.push(new PageView("", viewModel, ""));
+    }
     static async pushPageViewToStack(pageModel){
         if(this.stack.length < 1){
             const pageDiv = this.createPageDiv();
@@ -108,11 +111,7 @@ class UIController{
         };
         element.addEventListener("transitionend", onTransitionEnd);
         element.classList.add("pageJS-hidden-modal");
-        // if(this.stack.length > 1 && reInitialize){
-        //     this.reInitialize(this.stack[this.stack.length - 1]);
-        // }
-        //just a test!
-        if(reInitialize){
+        if(this.stack.length > 1 && reInitialize){
             this.reInitialize(this.stack[this.stack.length - 1]);
         }
     }
