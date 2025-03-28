@@ -260,4 +260,38 @@ class UIController{
             this.activityIndicatorContainer.classList.add("pageJS-hidden-page");
         }
     }
+    static toggleElementLoader(elementId, show = true) {
+        const el = document.getElementById(elementId);
+        if (!el) {
+            console.warn(`[PageJS] toggleElementLoader: Element met ID '${elementId}' niet gevonden.`);
+            return;
+        }
+    
+        const existing = el.querySelector(".pageJS-element-loader");
+    
+        if (show) {
+            if (existing) return;
+    
+            const overlay = document.createElement("div");
+            overlay.className = "pageJS-element-loader";
+    
+            const spinner = document.createElement("span");
+            spinner.classList.add("pageJS-loader");
+            overlay.appendChild(spinner);
+    
+            if (getComputedStyle(el).position === "static") {
+                el.style.position = "relative";
+            }
+    
+            el.style.filter = "brightness(0.7) blur(1px)";
+            el.style.pointerEvents = "none";
+            el.appendChild(overlay);
+        } else {
+            if (existing) {
+                el.style.filter = "";
+                el.style.pointerEvents = "";
+                existing.remove();
+            }
+        }
+    }
 }
