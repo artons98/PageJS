@@ -4,6 +4,7 @@ class UIController{
     static baseID = "pageJSElement-";
     static originalThemeColor = null;
     static activityIndicatorContainer = null;
+    static _activeFetches = 0;
 
     static async openPage(pageModel){
         const container = document.getElementById("PageJS-main-content");
@@ -18,9 +19,6 @@ class UIController{
         };
         container.addEventListener("transitionend", onTransitionEnd);
         container.classList.add("pageJS-hidden-page");
-    }
-    static async pushSelfToStack(viewModel){
-        this.stack.push(new PageView("", viewModel, ""));
     }
     static async pushPageViewToStack(pageModel){
         if(this.stack.length < 1){
@@ -293,5 +291,59 @@ class UIController{
                 existing.remove();
             }
         }
+        
+    }
+    
+    static visualizePromise(promise, loadingMessage = "Laden...", position = "bottom-right") {
+        const popupId = "pageJS-notification-popup";
+        const messageId = "pageJS-notification-message";
+        let notification = document.getElementById(popupId);
+        let messageBox;
+
+        if (!notification) {
+            notification = document.createElement('div');
+            notification.id = popupId;
+            notification.className = 'pageJS-notification';
+            messageBox = document.createElement('div');
+            messageBox.id = messageId;
+            notification.appendChild(messageBox);
+            document.body.appendChild(notification);
+        } else {
+            messageBox = document.getElementById(messageId);
+        }
+
+        let activeFetches = UIController._activeFetches ?? 0;
+        UIController._activeFetches = ++activeFetches;
+
+        document.body.style.cursor = 'progress';
+        messageBox.innerHTML = `<span class="pageJS-loader"></span><span style="margin-left: 0.5rem;">${loadingMessage}</span>`;
+        notification.classList.add(`pageJS-notification--${position}`);
+        notification.classList.add('show');
+
+        const minVisibleTime = 1000;
+        const shownAt = Date.now();
+
+        const cleanup = (icon) => {
+            const delay = Math.max(0, minVisibleTime - (Date.now() - shownAt));
+            setTimeout(() => {
+                messageBox.innerHTML = icon;
+                setTimeout(() => {
+                    if (--UIController._activeFetches <= 0) {
+                        document.body.style.cursor = 'default';
+                        notification.classList.remove('show');
+                    }
+                }, 1000);
+            }, delay);
+        };
+
+        return promise
+            .then(result => {
+                cleanup("✅");
+                return result;
+            })
+            .catch(error => {
+                cleanup("❌");
+                throw error;
+            });
     }
 }
