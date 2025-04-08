@@ -272,6 +272,7 @@ class UIController{
     
             const overlay = document.createElement("div");
             overlay.className = "pageJS-element-loader";
+            overlay.style.zIndex = this.getHighestZIndex() + 1;
     
             const spinner = document.createElement("span");
             spinner.classList.add("pageJS-loader");
@@ -302,6 +303,7 @@ class UIController{
 
         if (!notification) {
             notification = document.createElement('div');
+            notification.style.zIndex = this.getHighestZIndex() + 1;
             notification.id = popupId;
             notification.className = 'pageJS-notification';
             messageBox = document.createElement('div');
