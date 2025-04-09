@@ -319,6 +319,11 @@ class UIController{
         document.body.style.cursor = 'progress';
         messageBox.innerHTML = `<span class="pageJS-loader"></span><span style="margin-left: 0.5rem;">${loadingMessage}</span>`;
         notification.style.zIndex = this.getHighestZIndex() + 1;
+        notification.classList.forEach(cls => {
+            if (cls.startsWith("pageJS-notification--")) {
+                notification.classList.remove(cls);
+            }
+        });
         notification.classList.add(`pageJS-notification--${position}`);
         notification.classList.add('show');
 

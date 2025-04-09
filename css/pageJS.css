@@ -314,8 +314,9 @@ html.dark-theme .pageJS-container__content {
   right: 20px;
   padding: 16px 24px;
   border-radius: 16px;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.15);
+  /* backdrop-filter: blur(10px); */
+  /* background: rgba(255, 255, 255, 0.15); */
+  
   color: #fff;
   font-size: 1.25rem;
   display: flex;
@@ -369,6 +370,13 @@ html.dark-theme .pageJS-container__content {
 .pageJS-notification--top-left {
   top: 20px;
   left: 20px;
+}
+.pageJS-notification--centered {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: fit-content;
+  height: fit-content;
 }
 
 @keyframes pageJS-rotate {
