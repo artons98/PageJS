@@ -1,4 +1,134 @@
-window.PageJS = window.PageJS || {};
+/*PageJS by APDSoftware*//*modalpage.js*/class Page{
+    constructor(title, viewModel) {
+        this.title = title;
+        this.viewModel = viewModel;
+    }
+    initialize(){
+        const rootElement = document.querySelector('body'); // Of ander root-element
+
+        if (!ko.dataFor(rootElement)) {
+            ko.applyBindings(this.viewModel, rootElement);
+        }
+    }
+    
+}/*page-view.js*/class PageView{
+    constructor(title, viewModel, htmlPath, container = null, reInitialiseOnClose = true) {
+        this.title = title;
+        this.viewModel = viewModel;
+        this.htmlPath = htmlPath;
+        this.container = container;
+        this.rootElement = null;
+        this.reInitialiseOnClose = reInitialiseOnClose;
+    }
+    async initialize(rootElement = this.rootElement){
+        UIController.toggleActivityIndicator(true);
+        this.rootElement = rootElement;
+        if (!this.rootElement.hasChildNodes()) {
+            await this.addHTML(this.rootElement);
+        }
+        await this.onAppearing();
+        UIController.toggleActivityIndicator(false);
+        return;
+    }
+    async onAppearing() {
+        if (this.rootElement) {
+            if (ko.dataFor(this.rootElement)) {
+                ko.cleanNode(this.rootElement);
+            }
+            if (this.viewModel) {
+                ko.applyBindings(this.viewModel, this.rootElement);
+            } else {
+                console.error('[PageJS] Geen viewModel beschikbaar voor binding.');
+            }
+        }
+    }
+    async addHTML(rootElement) {
+        const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        const basePath = window.location.origin + path;
+        const url = new URL(`${basePath}${this.htmlPath}`, window.location.origin);
+    
+        const response = await fetch(url);
+        const html = await response.text();
+    
+        // Maak een tijdelijke DOM-container om de opgehaalde HTML te parsen
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+    
+        // Bepaal de gewenste div op basis van de bestandsnaam zonder extensie
+        const fileName = this.htmlPath.split('/').pop().split('.')[0];
+        const targetDiv = tempDiv.querySelector(`#${fileName}`);
+    
+        // Controleer of de gewenste div bestaat
+        if (targetDiv) {
+            rootElement.innerHTML = "";
+            rootElement.append(targetDiv);
+        } else {
+            console.warn(`[PageJS] Div met id "${fileName}" niet gevonden in het HTML-bestand.`);
+        }
+    
+        return;
+    }
+
+}/*confirm-view.js*/class ConfirmView{
+    constructor(title, viewModel, htmlPath, callback, container = null, reInitialiseOnClose = true) {
+        this.title = title;
+        this.viewModel = viewModel;
+        this.htmlPath = htmlPath;
+        this.callback = callback;
+        this.container = container;
+        this.rootElement = null;
+        this.reInitialiseOnClose = reInitialiseOnClose;
+    }
+    async initialize(rootElement = this.rootElement){
+        UIController.toggleActivityIndicator(true);
+        this.rootElement = rootElement;
+        if (!this.rootElement.hasChildNodes()) {
+            await this.addHTML(this.rootElement);
+        }
+        await this.onAppearing();
+        UIController.toggleActivityIndicator(false);
+        return;
+    }
+    async onAppearing() {
+        if (this.rootElement) {
+            if (ko.dataFor(this.rootElement)) {
+                ko.cleanNode(this.rootElement);
+            }
+            if (this.viewModel) {
+                ko.applyBindings(this.viewModel, this.rootElement);
+            } else {
+                console.error('[PageJS] Geen viewModel beschikbaar voor binding.');
+            }
+        }
+    }
+    async addHTML(rootElement) {
+        const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        const basePath = window.location.origin + path;
+        const url = new URL(`${basePath}${this.htmlPath}`, window.location.origin);
+    
+        const response = await fetch(url);
+        const html = await response.text();
+    
+        // Maak een tijdelijke DOM-container om de opgehaalde HTML te parsen
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+    
+        // Bepaal de gewenste div op basis van de bestandsnaam zonder extensie
+        const fileName = this.htmlPath.split('/').pop().split('.')[0];
+        const targetDiv = tempDiv.querySelector(`#${fileName}`);
+    
+        // Controleer of de gewenste div bestaat
+        if (targetDiv) {
+            rootElement.innerHTML = "";
+            rootElement.append(targetDiv);
+        } else {
+            console.warn(`[PageJS] Div met id "${fileName}" niet gevonden in het HTML-bestand.`);
+        }
+    
+        return;
+    }
+
+}/*uicontroller.js*/window.PageJS = window.PageJS || {};
 
 if (!PageJS.UIController) {
     PageJS.UIController = class {
@@ -357,4 +487,93 @@ if (!PageJS.UIController) {
                 });
         }
     }
+}/*startup.js*/window.PageJS = window.PageJS || {};
+
+if(!PageJS.Startup){
+  PageJS.Startup = class{
+    constructor(){
+      PageJS.Utils.waitForFunction("OnStartup", (fn) => {
+        fn();
+      });
+    }
+  }
 }
+
+
+/*router.js*/window.PageJS = window.PageJS || {};
+
+if (!PageJS.Router) {
+  PageJS.Router = class {
+    static async handleRouting({ autoResetUrl = true, delayBetweenSteps = 300, timeout = 5000 } = {}) {
+      const pathSegments = window.location.pathname
+        .split("/")
+        .filter(p => p && p.trim());
+
+      if (pathSegments.length === 0) return;
+
+      for (const segment of pathSegments) {
+        try {
+          const selector = `[data-route="${segment}"]`;
+          const el = await PageJS.Utils.waitForElement(selector, timeout);
+          el.click();
+          await PageJS.Utils.sleep(delayBetweenSteps);
+        } catch (err) {
+          console.warn(`PageJS.Router: element voor segment "${segment}" niet gevonden.`, err);
+          break;
+        }
+      }
+
+      if (autoResetUrl) {
+        window.history.replaceState({}, "", "/");
+      }
+    }
+  };
+}/*utils.js*/window.PageJS = window.PageJS || {};
+
+if(!PageJS.Utils){
+    PageJS.Utils = class{
+        static waitForElement(selector, timeout = 5000) {
+            return new Promise((resolve, reject) => {
+                const el = document.querySelector(selector);
+                if (el) return resolve(el);
+        
+                const observer = new MutationObserver(() => {
+                    const elNow = document.querySelector(selector);
+                    if (elNow) {
+                    observer.disconnect();
+                    resolve(elNow);
+                    }
+                });
+        
+                observer.observe(document.body, { childList: true, subtree: true });
+        
+                setTimeout(() => {
+                    observer.disconnect();
+                    reject(`Timeout na ${timeout}ms voor ${selector}`);
+                }, timeout);
+            });
+        }
+        static waitForFunction = (name, callback, timeout = 10000) => {
+            const interval = 100;
+            let waited = 0;
+          
+            const check = () => {
+                if (typeof window[name] === 'function') {
+                    console.log(`[PageJS] Functie ${name} is beschikbaar en wordt uitgevoerd!`);
+                    clearInterval(timer);
+                    callback(window[name]);
+                } else if (waited >= timeout) {
+                    clearInterval(timer);
+                    console.warn(`[PageJS] Timeout: functie ${name} is niet gevonden`);
+                }
+                waited += interval;
+            };
+          
+            const timer = setInterval(check, interval);
+          };
+      
+        static sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    }
+}/*copyright*/

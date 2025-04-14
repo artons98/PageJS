@@ -1,0 +1,15 @@
+{
+    "files": [
+        "modalpage.js",  
+        "page-view.js",
+        "confirm-view.js",
+        "uicontroller.js",
+        "startup.js",
+        "router.js",
+        "utils.js"
+    ],
+    "out": "dist/page.js",
+    "header" : "/*PageJS by APDSoftware*/\n",
+    "footer": "/*copyright*/",
+    "fileheader":"/*${filename}*/"
+}

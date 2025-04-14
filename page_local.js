@@ -1,4 +1,4 @@
-const BASE_URL = "https://techniekleren.aprize.nl/PageJS/";
+const BASE_URL = `${window.location.protocol}//${window.location.host}` + "/PageJS/";
 
 const FILES = [
   "modalpage.js",  
@@ -8,6 +8,8 @@ const FILES = [
   "css/pageJS.css",
   "https://kit.fontawesome.com/08661490f4.js", // Externe Font Awesome script
   "startup.js",
+  "router.js",
+  "utils.js",
 ];
 
 function loadScript(file) {
