@@ -54,4 +54,7 @@ async function loadAllFiles() {
 }
 
 // Start het laden van bestanden
-loadAllFiles();
+(async () => {
+  await loadAllFiles();
+  new PageJS.Startup();
+})();

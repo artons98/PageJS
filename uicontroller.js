@@ -161,10 +161,10 @@ if (!PageJS.UIController) {
             closeButton.classList.add("btn", "btn-primary", "text-light", "icon-button", "pageJS-container__close-button");
             closeButton.setAttribute("type", "button");
             if(pageModel.reInitialiseOnClose){
-                closeButton.setAttribute("onclick", "UIController.popView();");
+                closeButton.setAttribute("onclick", "PageJS.UIController.popView();");
             }
             else{
-                closeButton.setAttribute("onclick", "UIController.popView(false);");
+                closeButton.setAttribute("onclick", "PageJS.UIController.popView(false);");
             }
             titleBar.append(closeButton);
         
@@ -191,17 +191,17 @@ if (!PageJS.UIController) {
             const closeButton = document.createElement('button');
             closeButton.classList.add("btn", "btn-primary", "text-light", "icon-button", "pageJS-container__close-button");
             closeButton.setAttribute("type", "button");
-            closeButton.setAttribute("onclick", "UIController.popView(false);");
+            closeButton.setAttribute("onclick", "PageJS.UIController.popView(false);");
             titleBar.append(closeButton);
 
             const confirmButton = document.createElement('button');
             confirmButton.classList.add("btn", "btn-primary", "text-light", "icon-button", "pageJS-container__confirm-button");
             confirmButton.setAttribute("type", "button");
             if(pageModel.reInitialiseOnClose){
-                confirmButton.setAttribute("onclick", "UIController.handleConfirmed();");
+                confirmButton.setAttribute("onclick", "PageJS.UIController.handleConfirmed();");
             }
             else{
-                confirmButton.setAttribute("onclick", "UIController.handleConfirmed(false);");
+                confirmButton.setAttribute("onclick", "PageJS.UIController.handleConfirmed(false);");
             }
             titleBar.append(confirmButton);
         
@@ -316,8 +316,8 @@ if (!PageJS.UIController) {
                 messageBox = document.getElementById(messageId);
             }
 
-            let activeFetches = UIController._activeFetches ?? 0;
-            UIController._activeFetches = ++activeFetches;
+            let activeFetches = PageJS.UIController._activeFetches ?? 0;
+            PageJS.UIController._activeFetches = ++activeFetches;
 
             document.body.style.cursor = 'progress';
             messageBox.innerHTML = `<span class="pageJS-loader"></span><span style="margin-left: 0.5rem;">${loadingMessage}</span>`;
@@ -338,7 +338,7 @@ if (!PageJS.UIController) {
                 setTimeout(() => {
                     messageBox.innerHTML = icon;
                     setTimeout(() => {
-                        if (--UIController._activeFetches <= 0) {
+                        if (--PageJS.UIController._activeFetches <= 0) {
                             document.body.style.cursor = 'default';
                             notification.classList.remove('show');
                         }
