@@ -2,19 +2,19 @@ window.PageJS = window.PageJS || {};
 
 if(!PageJS.PushSetup){
     PageJS.PushSetup = class{
-        constructor(url = null){
+        constructor(url = null, serviceWorkerPath = null){
             this.vapidPublicKey = 'BJ_s73UJuOwb23NtDqmc5HoLhks1GAYL2h3_VGSFfoTiwZPsJTc_D4sqhIsMCbGloVG7BYGDkEakfwdaFpMebKs';
-            this.subscribeForPushNotifications(url);
+            this.subscribeForPushNotifications(url, serviceWorkerPath);
         }
         async urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - base64String.length % 4) % 4);
             const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
             return Uint8Array.from(atob(base64).split('').map(c => c.charCodeAt(0)));
         }
-        async subscribeForPushNotifications(url = null) {
+        async subscribeForPushNotifications(url = null, serviceWorkerPath = null) {
             if (!('serviceWorker' in navigator)) return;
         
-                const registration = await navigator.serviceWorker.register('/service-worker.js');
+                const registration = await navigator.serviceWorker.register( serviceWorkerPath ||'/service-worker.js');
                 const permission = await Notification.requestPermission();
             if (permission !== 'granted') return;
         
