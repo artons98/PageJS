@@ -1,4 +1,7 @@
-class ConfirmView{
+window.PageJS = window.PageJS || {};
+
+if(!PageJS.ConfirmView){
+    PageJS.ConfirmView = class {
     constructor(title, viewModel, htmlPath, callback, container = null, reInitialiseOnClose = true) {
         this.title = title;
         this.viewModel = viewModel;
@@ -9,13 +12,13 @@ class ConfirmView{
         this.reInitialiseOnClose = reInitialiseOnClose;
     }
     async initialize(rootElement = this.rootElement){
-        UIController.toggleActivityIndicator(true);
+        PageJS.UIController.toggleActivityIndicator(true);
         this.rootElement = rootElement;
         if (!this.rootElement.hasChildNodes()) {
             await this.addHTML(this.rootElement);
         }
         await this.onAppearing();
-        UIController.toggleActivityIndicator(false);
+        PageJS.UIController.toggleActivityIndicator(false);
         return;
     }
     async onAppearing() {
@@ -57,4 +60,10 @@ class ConfirmView{
         return;
     }
 
+
+    }
+
 }
+
+}
+

@@ -1,4 +1,7 @@
-class PageView{
+window.PageJS = window.PageJS || {};
+
+if(!PageJS.PageView){
+    PageJS.PageView = class {
     constructor(title, viewModel, htmlPath, container = null, reInitialiseOnClose = true) {
         this.title = title;
         this.viewModel = viewModel;
@@ -56,4 +59,10 @@ class PageView{
         return;
     }
 
+
+    }
+
 }
+
+}
+

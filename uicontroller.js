@@ -28,7 +28,7 @@ if (!PageJS.UIController) {
                 const pageDiv = this.createPageDiv();
                 document.body.append(pageDiv);
                 pageDiv.style.zIndex = this.getHighestZIndex() + 1;
-                this.stack.push(new PageView("", null, "", pageDiv));
+                this.stack.push(new PageJS.PageView("", null, "", pageDiv));
 
                 const metaThemeColor = document.querySelector('meta[name="theme-color"]');
                 if (metaThemeColor) {
@@ -54,12 +54,12 @@ if (!PageJS.UIController) {
             this.stack.push(pageModel);
             
         }
-        static async pushConfirmViewToStack(ConfirmView){
+        static async pushConfirmViewToStack(confirmView){
             if(this.stack.length < 1){
                 const pageDiv = this.createPageDiv();
                 document.body.append(pageDiv);
                 pageDiv.style.zIndex = this.getHighestZIndex() + 1;
-                this.stack.push(new PageView("", null, "", pageDiv));
+                this.stack.push(new PageJS.PageView("", null, "", pageDiv));
 
                 const metaThemeColor = document.querySelector('meta[name="theme-color"]');
                 if (metaThemeColor) {
@@ -74,15 +74,15 @@ if (!PageJS.UIController) {
                 history.pushState(null, 'Popup Open', '');
                 pageDiv.classList.remove('pageJS-hidden-page');
             }
-            const container = this.createConfirmContainerDiv(ConfirmView);
+            const container = this.createConfirmContainerDiv(confirmView);
             this.stack[0].container.append(container);
-            await ConfirmView.initialize(container.childNodes[1]);
+            await confirmView.initialize(container.childNodes[1]);
             container.classList.remove("pageJS-hidden-modal");
-            ConfirmView.container = container;
+            confirmView.container = container;
             if(this.stack.length > 1){
                 this.stack[this.stack.length - 1].container.classList.add("pageJS-partially-hidden");
             }
-            this.stack.push(ConfirmView);
+            this.stack.push(confirmView);
             
         }
         static popView(reInitialize = true){
