@@ -8,5 +8,6 @@ https://cdn.jsdelivr.net/gh/artons98/PageJS/startup.js
 https://cdn.jsdelivr.net/gh/artons98/PageJS/confirm-view.js
 https://cdn.jsdelivr.net/gh/artons98/PageJS/uicontroller.js
 https://cdn.jsdelivr.net/gh/artons98/PageJS/modalpage.js
+https://cdn.jsdelivr.net/gh/artons98/PageJS/version.js
 
 
