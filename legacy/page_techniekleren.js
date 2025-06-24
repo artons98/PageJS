@@ -10,6 +10,7 @@ const FILES = [
   "startup.js",
   "router.js",
   "utils.js",
+  "version.js",
   "push-setup.js"
 ];
 

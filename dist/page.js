@@ -1,4 +1,5 @@
-/*PageJS by APDSoftware*//*modalpage.js*/class Page{
+/*PageJS by APDSoftware*/
+/*modalpage.js*/class Page{
     constructor(title, viewModel) {
         this.title = title;
         this.viewModel = viewModel;
@@ -11,7 +12,11 @@
         }
     }
     
-}/*page-view.js*/class PageView{
+}
+/*page-view.js*/window.PageJS = window.PageJS || {};
+
+if(!PageJS.PageView){
+    PageJS.PageView = class {
     constructor(title, viewModel, htmlPath, container = null, reInitialiseOnClose = true) {
         this.title = title;
         this.viewModel = viewModel;
@@ -21,13 +26,13 @@
         this.reInitialiseOnClose = reInitialiseOnClose;
     }
     async initialize(rootElement = this.rootElement){
-        UIController.toggleActivityIndicator(true);
+        PageJS.UIController.toggleActivityIndicator(true);
         this.rootElement = rootElement;
         if (!this.rootElement.hasChildNodes()) {
             await this.addHTML(this.rootElement);
         }
         await this.onAppearing();
-        UIController.toggleActivityIndicator(false);
+        PageJS.UIController.toggleActivityIndicator(false);
         return;
     }
     async onAppearing() {
@@ -69,7 +74,17 @@
         return;
     }
 
-}/*confirm-view.js*/class ConfirmView{
+
+    }
+
+}
+
+}
+
+/*confirm-view.js*/window.PageJS = window.PageJS || {};
+
+if(!PageJS.ConfirmView){
+    PageJS.ConfirmView = class {
     constructor(title, viewModel, htmlPath, callback, container = null, reInitialiseOnClose = true) {
         this.title = title;
         this.viewModel = viewModel;
@@ -80,13 +95,13 @@
         this.reInitialiseOnClose = reInitialiseOnClose;
     }
     async initialize(rootElement = this.rootElement){
-        UIController.toggleActivityIndicator(true);
+        PageJS.UIController.toggleActivityIndicator(true);
         this.rootElement = rootElement;
         if (!this.rootElement.hasChildNodes()) {
             await this.addHTML(this.rootElement);
         }
         await this.onAppearing();
-        UIController.toggleActivityIndicator(false);
+        PageJS.UIController.toggleActivityIndicator(false);
         return;
     }
     async onAppearing() {
@@ -128,7 +143,14 @@
         return;
     }
 
-}/*uicontroller.js*/window.PageJS = window.PageJS || {};
+
+    }
+
+}
+
+}
+
+/*uicontroller.js*/window.PageJS = window.PageJS || {};
 
 if (!PageJS.UIController) {
     PageJS.UIController = class {
@@ -158,7 +180,7 @@ if (!PageJS.UIController) {
                 const pageDiv = this.createPageDiv();
                 document.body.append(pageDiv);
                 pageDiv.style.zIndex = this.getHighestZIndex() + 1;
-                this.stack.push(new PageView("", null, "", pageDiv));
+                this.stack.push(new PageJS.PageView("", null, "", pageDiv));
 
                 const metaThemeColor = document.querySelector('meta[name="theme-color"]');
                 if (metaThemeColor) {
@@ -184,12 +206,12 @@ if (!PageJS.UIController) {
             this.stack.push(pageModel);
             
         }
-        static async pushConfirmViewToStack(ConfirmView){
+        static async pushConfirmViewToStack(confirmView){
             if(this.stack.length < 1){
                 const pageDiv = this.createPageDiv();
                 document.body.append(pageDiv);
                 pageDiv.style.zIndex = this.getHighestZIndex() + 1;
-                this.stack.push(new PageView("", null, "", pageDiv));
+                this.stack.push(new PageJS.PageView("", null, "", pageDiv));
 
                 const metaThemeColor = document.querySelector('meta[name="theme-color"]');
                 if (metaThemeColor) {
@@ -204,15 +226,15 @@ if (!PageJS.UIController) {
                 history.pushState(null, 'Popup Open', '');
                 pageDiv.classList.remove('pageJS-hidden-page');
             }
-            const container = this.createConfirmContainerDiv(ConfirmView);
+            const container = this.createConfirmContainerDiv(confirmView);
             this.stack[0].container.append(container);
-            await ConfirmView.initialize(container.childNodes[1]);
+            await confirmView.initialize(container.childNodes[1]);
             container.classList.remove("pageJS-hidden-modal");
-            ConfirmView.container = container;
+            confirmView.container = container;
             if(this.stack.length > 1){
                 this.stack[this.stack.length - 1].container.classList.add("pageJS-partially-hidden");
             }
-            this.stack.push(ConfirmView);
+            this.stack.push(confirmView);
             
         }
         static popView(reInitialize = true){
@@ -291,10 +313,10 @@ if (!PageJS.UIController) {
             closeButton.classList.add("btn", "btn-primary", "text-light", "icon-button", "pageJS-container__close-button");
             closeButton.setAttribute("type", "button");
             if(pageModel.reInitialiseOnClose){
-                closeButton.setAttribute("onclick", "UIController.popView();");
+                closeButton.setAttribute("onclick", "PageJS.UIController.popView();");
             }
             else{
-                closeButton.setAttribute("onclick", "UIController.popView(false);");
+                closeButton.setAttribute("onclick", "PageJS.UIController.popView(false);");
             }
             titleBar.append(closeButton);
         
@@ -321,17 +343,17 @@ if (!PageJS.UIController) {
             const closeButton = document.createElement('button');
             closeButton.classList.add("btn", "btn-primary", "text-light", "icon-button", "pageJS-container__close-button");
             closeButton.setAttribute("type", "button");
-            closeButton.setAttribute("onclick", "UIController.popView(false);");
+            closeButton.setAttribute("onclick", "PageJS.UIController.popView(false);");
             titleBar.append(closeButton);
 
             const confirmButton = document.createElement('button');
             confirmButton.classList.add("btn", "btn-primary", "text-light", "icon-button", "pageJS-container__confirm-button");
             confirmButton.setAttribute("type", "button");
             if(pageModel.reInitialiseOnClose){
-                confirmButton.setAttribute("onclick", "UIController.handleConfirmed();");
+                confirmButton.setAttribute("onclick", "PageJS.UIController.handleConfirmed();");
             }
             else{
-                confirmButton.setAttribute("onclick", "UIController.handleConfirmed(false);");
+                confirmButton.setAttribute("onclick", "PageJS.UIController.handleConfirmed(false);");
             }
             titleBar.append(confirmButton);
         
@@ -446,8 +468,8 @@ if (!PageJS.UIController) {
                 messageBox = document.getElementById(messageId);
             }
 
-            let activeFetches = UIController._activeFetches ?? 0;
-            UIController._activeFetches = ++activeFetches;
+            let activeFetches = PageJS.UIController._activeFetches ?? 0;
+            PageJS.UIController._activeFetches = ++activeFetches;
 
             document.body.style.cursor = 'progress';
             messageBox.innerHTML = `<span class="pageJS-loader"></span><span style="margin-left: 0.5rem;">${loadingMessage}</span>`;
@@ -468,7 +490,7 @@ if (!PageJS.UIController) {
                 setTimeout(() => {
                     messageBox.innerHTML = icon;
                     setTimeout(() => {
-                        if (--UIController._activeFetches <= 0) {
+                        if (--PageJS.UIController._activeFetches <= 0) {
                             document.body.style.cursor = 'default';
                             notification.classList.remove('show');
                         }
@@ -487,7 +509,8 @@ if (!PageJS.UIController) {
                 });
         }
     }
-}/*startup.js*/window.PageJS = window.PageJS || {};
+}
+/*startup.js*/window.PageJS = window.PageJS || {};
 
 if(!PageJS.Startup){
   PageJS.Startup = class{
@@ -504,7 +527,7 @@ if(!PageJS.Startup){
 
 if (!PageJS.Router) {
   PageJS.Router = class {
-    static async handleRouting({ autoResetUrl = true, delayBetweenSteps = 300, timeout = 5000 } = {}) {
+    static async handleRouting({ autoResetUrl = true, delayBetweenSteps = 300, timeout = 5000, basePath } = {}) {
       const pathSegments = window.location.pathname
         .split("/")
         .filter(p => p && p.trim());
@@ -524,11 +547,12 @@ if (!PageJS.Router) {
       }
 
       if (autoResetUrl) {
-        window.history.replaceState({}, "", "/");
+        window.history.replaceState({}, "", basePath || "/");
       }
     }
   };
-}/*utils.js*/window.PageJS = window.PageJS || {};
+}
+/*utils.js*/window.PageJS = window.PageJS || {};
 
 if(!PageJS.Utils){
     PageJS.Utils = class{
@@ -575,5 +599,131 @@ if(!PageJS.Utils){
         static sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
+        static async getAppNameFromManifest() {
+            try {
+                const link = document.querySelector('link[rel="manifest"]');
+                if (!link) throw new Error("Manifest link niet gevonden");
+                const response = await fetch(link.href);
+                if (!response.ok) throw new Error("Manifest niet opgehaald");
+                const manifest = await response.json();
+                return manifest.name || manifest.short_name || 'APDSoftware-App';
+            } catch (e) {
+                console.warn("Fout bij ophalen app naam uit manifest:", e);
+                return 'APDSoftware-App';
+            }
+        }
+        static async loadCachedAndFresh({ cacheKey, fetchFunction, applyFunction }) {
+            const appName = await PageJS.Utils.getAppNameFromManifest();
+            const fullCacheKey = `${appName}_${cacheKey}`;
+            const cached = localStorage.getItem(fullCacheKey);
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    applyFunction(parsed, { fromCache: true });
+                } catch (e) {
+                    console.warn("Corrupt cache voor " + fullCacheKey);
+                }
+            }
+        
+            let fresh;
+            try {
+                fresh = await PageJS.UIController.visualizePromise(fetchFunction(), `Ophalen: ${fullCacheKey}`);
+            } catch (err) {
+                console.warn("UIController niet beschikbaar of fout tijdens visualisatie, fetch zonder visualisatie.");
+                fresh = await fetchFunction();
+            }
+            localStorage.setItem(fullCacheKey, JSON.stringify(fresh));
+            applyFunction(fresh, { fromCache: false });
+        }
+        static remToPx(rem) {
+            return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+        }
+        static debounce(fn, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
     }
-}/*copyright*/
+}
+/*version.js*/window.PageJS = window.PageJS || {};
+
+if(!PageJS.VersionJS){
+    PageJS.VersionJS = class {
+        static init(versionFilePath){
+            if(versionFilePath){
+                window.VERSIONFILEPATH = versionFilePath;
+            }
+            this.checkVersionAndUpdateIfNeeded();
+        }
+        static async getVersionFromManifest(){
+            try{
+                const link = document.querySelector('link[rel="manifest"]');
+                if(!link) throw new Error('Manifest link niet gevonden');
+                const response = await fetch(link.href + '?nocache=' + new Date().getTime());
+                if(!response.ok) throw new Error('Manifest niet opgehaald');
+                const manifest = await response.json();
+                return manifest.version;
+            }catch(e){
+                console.warn('Fout bij ophalen versie uit manifest:', e);
+                return null;
+            }
+        }
+        static async checkVersionAndUpdateIfNeeded() {
+            try {
+                let currentVersion;
+                if (window.VERSIONFILEPATH) {
+                    const response = await fetch(`${window.VERSIONFILEPATH}?nocache=` + new Date().getTime());
+                    const data = await response.json();
+                    currentVersion = data.version;
+                } else {
+                    currentVersion = await this.getVersionFromManifest();
+                }
+                if(!currentVersion) return;
+                const savedVersion = localStorage.getItem('siteVersion');
+
+                if (savedVersion !== currentVersion) {
+                    console.log(`New version detected: ${currentVersion} (was ${savedVersion})`);
+                    if ('caches' in window) {
+                        const keys = await caches.keys();
+                        await Promise.all(keys.map(k => caches.delete(k)));
+                    }
+                    localStorage.setItem('siteVersion', currentVersion);
+                    try{
+                        if ("serviceWorker" in navigator) {
+                            var registration = await navigator.serviceWorker.getRegistration();
+                            registration.update();
+                        }
+                    }catch{}
+                    location.reload(true);
+                }
+            } catch (err) {
+                console.error('Version control failed:', err);
+            }
+        }
+        static waitForVariable = (name, callback, timeout = 10000) => {
+            const interval = 100;
+            let waited = 0;
+            const check = () => {
+                if (typeof window[name] === 'string') {
+                    console.log(`[PageJS] variabele ${name} is beschikbaar en wordt gebruikt!`);
+                    clearInterval(timer);
+                    callback();
+                } else if (waited >= timeout) {
+                    clearInterval(timer);
+                    console.warn(`[PageJS] Timeout: variabele ${name} is niet gevonden`);
+                    callback();
+                }
+                waited += interval;
+            };
+
+            const timer = setInterval(check, interval);
+        };
+    }
+}
+
+PageJS.VersionJS.waitForVariable("VERSIONFILEPATH", () => {
+    PageJS.VersionJS.checkVersionAndUpdateIfNeeded();
+});
+/*copyright*/
