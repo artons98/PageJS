@@ -55,7 +55,7 @@ if(!PageJS.Utils){
                 return manifest.name || manifest.short_name || 'APDSoftware-App';
             } catch (e) {
                 console.warn("Fout bij ophalen app naam uit manifest:", e);
-                return 'defaultApp';
+                return 'APDSoftware-App';
             }
         }
         static async loadCachedAndFresh({ cacheKey, fetchFunction, applyFunction }) {
