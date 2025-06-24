@@ -1,6 +1,7 @@
-https://cdn.jsdelivr.net/gh/artons98/PageJS/main.js
-https://cdn.jsdelivr.net/gh/artons98/PageJS/main_local.js
-https://cdn.jsdelivr.net/gh/artons98/PageJS/main_techniekleren.js
+https://cdn.jsdelivr.net/gh/artons98/PageJS/page.js
+https://cdn.jsdelivr.net/gh/artons98/PageJS/utils.js
+https://cdn.jsdelivr.net/gh/artons98/PageJS/router.js
+https://cdn.jsdelivr.net/gh/artons98/PageJS/push-setup.js
 https://cdn.jsdelivr.net/gh/artons98/PageJS/css/pageJS.css
 https://cdn.jsdelivr.net/gh/artons98/PageJS/page-view.js
 https://cdn.jsdelivr.net/gh/artons98/PageJS/startup.js
