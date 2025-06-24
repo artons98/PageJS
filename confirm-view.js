@@ -65,5 +65,5 @@ if(!PageJS.ConfirmView){
 
 }
 
-}
+
 
