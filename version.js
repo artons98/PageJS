@@ -1,9 +1,12 @@
-class VersionJS{
-    static init(versionFilePath){
-        window.VERSIONFILEPATH = versionFilePath;
-        this.checkVersionAndUpdateIfNeeded();
-    }
-    static async checkVersionAndUpdateIfNeeded() {
+window.PageJS = window.PageJS || {};
+
+if(!PageJS.VersionJS){
+    PageJS.VersionJS = class {
+        static init(versionFilePath){
+            window.VERSIONFILEPATH = versionFilePath;
+            this.checkVersionAndUpdateIfNeeded();
+        }
+        static async checkVersionAndUpdateIfNeeded() {
         try {
             const response = await fetch(`${window.VERSIONFILEPATH}?nocache=` + new Date().getTime());
             const data = await response.json();
@@ -46,7 +49,9 @@ class VersionJS{
     
         const timer = setInterval(check, interval);
     };
+    }
 }
-VersionJS.waitForVariable("VERSIONFILEPATH", () => {
-    VersionJS.checkVersionAndUpdateIfNeeded();
+
+PageJS.VersionJS.waitForVariable("VERSIONFILEPATH", () => {
+    PageJS.VersionJS.checkVersionAndUpdateIfNeeded();
 });

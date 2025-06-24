@@ -6,7 +6,8 @@
         "uicontroller.js",
         "startup.js",
         "router.js",
-        "utils.js"
+        "utils.js",
+        "version.js"
     ],
     "out": "dist/page.js",
     "header" : "/*PageJS by APDSoftware*/\n",
