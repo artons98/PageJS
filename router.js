@@ -2,7 +2,7 @@ window.PageJS = window.PageJS || {};
 
 if (!PageJS.Router) {
   PageJS.Router = class {
-    static async handleRouting({ autoResetUrl = true, delayBetweenSteps = 300, timeout = 5000 } = {}) {
+    static async handleRouting({ autoResetUrl = true, delayBetweenSteps = 300, timeout = 5000, basePath } = {}) {
       const pathSegments = window.location.pathname
         .split("/")
         .filter(p => p && p.trim());
@@ -22,7 +22,7 @@ if (!PageJS.Router) {
       }
 
       if (autoResetUrl) {
-        window.history.replaceState({}, "", "/");
+        window.history.replaceState({}, "", basePath || "/");
       }
     }
   };
