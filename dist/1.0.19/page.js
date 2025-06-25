@@ -1,5 +1,5 @@
 /*PageJS by APDSoftware*/
-/* Version: 1.0.18 */
+/* Version: 1.0.19 */
 /*modalpage.js*/
 class Page{
     constructor(title, viewModel) {
