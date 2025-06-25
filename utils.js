@@ -91,5 +91,23 @@ if(!PageJS.Utils){
                 timeout = setTimeout(() => fn.apply(this, args), delay);
             };
         }
+
+        /**
+         * Geeft een absolute URL terug waarbij rekening wordt gehouden met de ingestelde basePath.
+         * @param {string} path
+         * @returns {string}
+         */
+        static resolveWithBasePath(path) {
+            if (/^https?:\/\//.test(path)) return path;
+            const base = (PageJS.basePath || "").replace(/\/$/, "");
+
+            if (path.startsWith("/")) {
+                if (base && path.startsWith(base + "/")) {
+                    return window.location.origin + path;
+                }
+                return window.location.origin + base + path;
+            }
+            return window.location.origin + base + "/" + path;
+        }
     }
 }

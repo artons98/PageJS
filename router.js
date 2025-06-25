@@ -3,9 +3,18 @@ window.PageJS = window.PageJS || {};
 if (!PageJS.Router) {
   PageJS.Router = class {
     static async handleRouting({ autoResetUrl = true, delayBetweenSteps = 300, timeout = 5000, basePath } = {}) {
-      const pathSegments = window.location.pathname
+      PageJS.basePath = basePath || PageJS.basePath || "";
+      let pathSegments = window.location.pathname
         .split("/")
         .filter(p => p && p.trim());
+
+      if (PageJS.basePath) {
+        const baseParts = PageJS.basePath.split("/").filter(p => p && p.trim());
+        const maybeBase = pathSegments.slice(0, baseParts.length).join("/");
+        if (maybeBase === baseParts.join("/")) {
+          pathSegments = pathSegments.slice(baseParts.length);
+        }
+      }
 
       if (pathSegments.length === 0) return;
 
