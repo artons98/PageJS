@@ -34,10 +34,8 @@ if(!PageJS.ConfirmView){
         }
     }
     async addHTML(rootElement) {
-        const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-        const basePath = window.location.origin + path;
-        const url = new URL(`${basePath}${this.htmlPath}`, window.location.origin);
-    
+        const url = PageJS.Utils.resolveWithBasePath(this.htmlPath);
+
         const response = await fetch(url);
         const html = await response.text();
     

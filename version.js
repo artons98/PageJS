@@ -12,7 +12,8 @@ if(!PageJS.VersionJS){
             try{
                 const link = document.querySelector('link[rel="manifest"]');
                 if(!link) throw new Error('Manifest link niet gevonden');
-                const response = await fetch(link.href + '?nocache=' + new Date().getTime());
+                const manifestUrl = PageJS.Utils.resolveWithBasePath(link.getAttribute('href'));
+                const response = await fetch(manifestUrl + '?nocache=' + new Date().getTime());
                 if(!response.ok) throw new Error('Manifest niet opgehaald');
                 const manifest = await response.json();
                 return manifest.version;
@@ -25,7 +26,8 @@ if(!PageJS.VersionJS){
             try {
                 let currentVersion;
                 if (window.VERSIONFILEPATH) {
-                    const response = await fetch(`${window.VERSIONFILEPATH}?nocache=` + new Date().getTime());
+                    const versionUrl = PageJS.Utils.resolveWithBasePath(window.VERSIONFILEPATH);
+                    const response = await fetch(`${versionUrl}?nocache=` + new Date().getTime());
                     const data = await response.json();
                     currentVersion = data.version;
                 } else {
