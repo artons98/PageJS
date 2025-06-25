@@ -15,7 +15,8 @@ if(!PageJS.PushSetup){
         static async subscribeForPushNotifications(url = null, serviceWorkerPath = null) {
             if (!('serviceWorker' in navigator)) return;
         
-                const registration = await navigator.serviceWorker.register( serviceWorkerPath ||'/service-worker.js');
+                const swPath = PageJS.Utils.resolveWithBasePath(serviceWorkerPath || '/service-worker.js');
+                const registration = await navigator.serviceWorker.register(swPath);
                 const permission = await Notification.requestPermission();
             if (permission !== 'granted') return;
         
