@@ -26,19 +26,24 @@ if(!PageJS.Utils){
         static waitForFunction = (name, callback, timeout = 10000) => {
             const interval = 100;
             let waited = 0;
-          
+
+            function getNestedProperty(path) {
+                return path.split('.').reduce((obj, key) => obj && obj[key], window);
+            }
+
             const check = () => {
-                if (typeof window[name] === 'function') {
+                const fn = getNestedProperty(name);
+                if (typeof fn === 'function') {
                     console.log(`[PageJS] Functie ${name} is beschikbaar en wordt uitgevoerd!`);
                     clearInterval(timer);
-                    callback(window[name]);
+                    callback(fn);
                 } else if (waited >= timeout) {
                     clearInterval(timer);
                     console.warn(`[PageJS] Timeout: functie ${name} is niet gevonden`);
                 }
                 waited += interval;
             };
-          
+
             const timer = setInterval(check, interval);
           };
       
