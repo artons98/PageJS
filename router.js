@@ -2,8 +2,7 @@ window.PageJS = window.PageJS || {};
 
 if (!PageJS.Router) {
   PageJS.Router = class {
-    static async handleRouting({ autoResetUrl = true, delayBetweenSteps = 300, timeout = 5000, basePath } = {}) {
-      PageJS.basePath = basePath || PageJS.basePath || "";
+    static async handleRouting({ autoResetUrl = true, delayBetweenSteps = 300, timeout = 5000 } = {}) {
       let pathSegments = window.location.pathname
         .split("/")
         .filter(p => p && p.trim());
@@ -31,7 +30,7 @@ if (!PageJS.Router) {
       }
 
       if (autoResetUrl) {
-        window.history.replaceState({}, "", basePath || "/");
+        window.history.replaceState({}, "", PageJS.basePath || "/");
       }
     }
   };

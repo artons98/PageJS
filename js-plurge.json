@@ -4,6 +4,7 @@
         "page-view.js",
         "confirm-view.js",
         "uicontroller.js",
+        "config.js",
         "startup.js",
         "router.js",
         "utils.js",
