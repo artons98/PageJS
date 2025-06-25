@@ -1,5 +1,5 @@
 /*PageJS by APDSoftware*/
-/* Version: 1.0.14 */
+/* Version: 1.0.15 */
 /*modalpage.js*/
 class Page{
     constructor(title, viewModel) {
@@ -525,7 +525,9 @@ if(!PageJS.Config){
             devBaseUrl: '',
             handleRouting: true,
             basePath: '',
-            version: '1.0.0'
+            version: '1.0.0',
+            replaceContent: true,
+            appName: 'APDSoftware-App',
         };
 
         static async initialize(){
@@ -566,21 +568,24 @@ if(!PageJS.Startup){
   PageJS.Startup = class{
     constructor(){
       (async () => {
-        // if(PageJS.Config && typeof PageJS.Config.initialize === 'function'){
-        //   await PageJS.Config.initialize();
-        // }
-        // else{
-        //     console.warn('[PageJS.Startup] PageJS.Config.initialize is niet beschikbaar. Zorg ervoor dat PageJS.Config is geladen voordat je PageJS.Startup gebruikt.');
-        // }
-        console.log('[PageJS.Startup] Initializing...');
         await PageJS.Config.initialize();
+        if(PageJS.Config.settings.replaceContent){
+            const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    mutation.addedNodes.forEach(node => {
+                        PageJS.Utils.replaceContentFromSettings(node);
+                    });
+                }
+            }
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true // Belangrijk als je ook toevoegingen diep in de DOM wilt volgen
+            });
+        }
         await PageJS.Version.checkVersionAndUpdateIfNeeded();
-        // PageJS.Utils.waitForFunction("PageJS.Config.initialize", (fn) => {
-        //   fn();
-        //   PageJS.Utils.waitForFunction("PageJS.Version.checkVersionAndUpdateIfNeeded", (fn) => {
-        //     fn();
-        //   });
-        // });
         PageJS.Utils.waitForFunction("OnStartup", (fn) => {
           fn();
         });
@@ -713,7 +718,33 @@ if(!PageJS.Utils){
             console.warn("Geen app naam gevonden in configuratie of manifest, gebruik standaard 'APDSoftware-App'.");
             return 'APDSoftware-App';
         }
-        
+        static async replaceContentFromSettings(element = null) {
+            if(element !== null) {
+                if (!element.hasAttribute("data-replace-content")) {
+                    return;
+                }
+                const settingName = element.getAttribute("data-replace-content");
+                const settingValue = PageJS.Config && PageJS.Config.settings ? PageJS.Config.settings[settingName] : null;
+                if (settingValue !== null && settingValue !== undefined) {
+                    element.innerText = settingValue;
+                } else {
+                    console.warn(`Geen waarde gevonden voor instelling "${settingName}"`);
+                }
+                return;
+            }
+            const elements = document.querySelectorAll("[data-replace-content]");
+            if (elements.length === 0) return;
+            for (const el of elements) {
+                const settingName = el.getAttribute("data-replace-content");
+                if (!settingName) continue;
+                const settingValue = PageJS.Config && PageJS.Config.settings ? PageJS.Config.settings[settingName] : null;
+                if (settingValue !== null && settingValue !== undefined) {
+                    el.innerText = settingValue;
+                } else {
+                    console.warn(`Geen waarde gevonden voor instelling "${settingName}"`);
+                }
+            }
+        }
         static async loadCachedAndFresh({ cacheKey, fetchFunction, applyFunction }) {
             const appName = await PageJS.Utils.getAppName();
             const fullCacheKey = `${appName}_${cacheKey}`;
