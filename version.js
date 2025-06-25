@@ -76,6 +76,6 @@ if(!PageJS.Version){
     }
 }
 
-PageJS.VersionJS.waitForVariable("VERSIONFILEPATH", () => {
-    PageJS.VersionJS.checkVersionAndUpdateIfNeeded();
+PageJS.Version.waitForVariable("VERSIONFILEPATH", () => {
+    PageJS.Version.checkVersionAndUpdateIfNeeded();
 });

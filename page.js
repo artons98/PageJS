@@ -1,6 +1,6 @@
 (function(){
   const DEFAULT_BASE = "https://cdn.jsdelivr.net/gh/artons98/PageJS/";
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
 
   function ensureTrailingSlash(url){
     return url.endsWith('/') ? url : url + '/';
