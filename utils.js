@@ -49,7 +49,8 @@ if(!PageJS.Utils){
             try {
                 const link = document.querySelector('link[rel="manifest"]');
                 if (!link) throw new Error("Manifest link niet gevonden");
-                const response = await fetch(link.href);
+                const manifestUrl = PageJS.Utils.resolveWithBasePath(link.getAttribute('href'));
+                const response = await fetch(manifestUrl);
                 if (!response.ok) throw new Error("Manifest niet opgehaald");
                 const manifest = await response.json();
                 return manifest.name || manifest.short_name || 'APDSoftware-App';
