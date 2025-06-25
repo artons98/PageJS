@@ -1,7 +1,7 @@
 window.PageJS = window.PageJS || {};
 
-if(!PageJS.VersionJS){
-    PageJS.VersionJS = class {
+if(!PageJS.Version){
+    PageJS.Version = class {
         static init(versionFilePath){
             if(versionFilePath){
                 window.VERSIONFILEPATH = versionFilePath;
