@@ -574,6 +574,9 @@ if(!PageJS.Startup){
     constructor(){
       (async () => {
         await PageJS.Config.initialize();
+        if(PageJS.Config.settings && PageJS.Config.settings.logo){
+            PageJS.Utils.applyLogoFromSettings();
+        }
         if(PageJS.Config.settings.replaceContent){
             PageJS.Utils.replaceContentFromSettings();
             const observer = new MutationObserver((mutationsList) => {
@@ -805,10 +808,34 @@ if(!PageJS.Utils){
                 }
                 //console.log(`[PageJS.Utils] Path begint met een slash, maar niet met basePath: ${base}`);
                 return window.location.origin + base + path;
-                
+
             }
             //console.log(`[PageJS.Utils] Path begint niet met een slash: ${path}`);
             return window.location.origin + base + "/" + path;
+        }
+
+        static applyLogoFromSettings() {
+            if (!PageJS.Config || !PageJS.Config.settings || !PageJS.Config.settings.logo) return;
+
+            let logoUrl = PageJS.Config.settings.logo;
+            if (!/^https?:\/\//.test(logoUrl)) {
+                if (window.PageJS_BASE_URL) {
+                    const base = window.PageJS_BASE_URL.replace(/\/$/, '');
+                    logoUrl = base + (logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl);
+                } else {
+                    logoUrl = PageJS.Utils.resolveWithBasePath(logoUrl);
+                }
+            }
+
+            const imgEl = document.querySelector('[data-logo-image]');
+            if (imgEl) {
+                imgEl.setAttribute('src', logoUrl);
+            }
+
+            const textEl = document.querySelector('[data-logo-text]');
+            if (textEl) {
+                textEl.classList.add('visually-hidden');
+            }
         }
 
         /**

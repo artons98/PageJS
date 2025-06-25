@@ -98,6 +98,30 @@ if(!PageJS.Utils){
             };
         }
 
+        static applyLogoFromSettings() {
+            if (!PageJS.Config || !PageJS.Config.settings || !PageJS.Config.settings.logo) return;
+
+            let logoUrl = PageJS.Config.settings.logo;
+            if (!/^https?:\/\//.test(logoUrl)) {
+                if (window.PageJS_BASE_URL) {
+                    const base = window.PageJS_BASE_URL.replace(/\/$/, '');
+                    logoUrl = base + (logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl);
+                } else {
+                    logoUrl = PageJS.Utils.resolveWithBasePath(logoUrl);
+                }
+            }
+
+            const imgEl = document.querySelector('[data-logo-image]');
+            if (imgEl) {
+                imgEl.setAttribute('src', logoUrl);
+            }
+
+            const textEl = document.querySelector('[data-logo-text]');
+            if (textEl) {
+                textEl.classList.add('visually-hidden');
+            }
+        }
+
         /**
          * Geeft een absolute URL terug waarbij rekening wordt gehouden met de ingestelde basePath.
          * @param {string} path
