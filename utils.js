@@ -101,13 +101,20 @@ if(!PageJS.Utils){
             if (/^https?:\/\//.test(path)) return path;
             const base = (PageJS.basePath || "").replace(/\/$/, "");
 
+            let resolved;
             if (path.startsWith("/")) {
                 if (base && path.startsWith(base + "/")) {
-                    return window.location.origin + path;
+                    resolved = window.location.origin + path;
+                } else {
+                    resolved = window.location.origin + base + path;
                 }
-                return window.location.origin + base + path;
+            } else {
+                resolved = window.location.origin + base + "/" + path;
             }
-            return window.location.origin + base + "/" + path;
+            if (PageJS.appendVersion) {
+                resolved = PageJS.appendVersion(resolved);
+            }
+            return resolved;
         }
     }
 }

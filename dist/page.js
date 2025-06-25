@@ -1,5 +1,6 @@
 /*PageJS by APDSoftware*/
-/*modalpage.js*/class Page{
+/*modalpage.js*/
+class Page{
     constructor(title, viewModel) {
         this.title = title;
         this.viewModel = viewModel;
@@ -13,7 +14,8 @@
     }
     
 }
-/*page-view.js*/window.PageJS = window.PageJS || {};
+/*page-view.js*/
+window.PageJS = window.PageJS || {};
 
 if(!PageJS.PageView){
     PageJS.PageView = class {
@@ -48,10 +50,8 @@ if(!PageJS.PageView){
         }
     }
     async addHTML(rootElement) {
-        const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-        const basePath = window.location.origin + path;
-        const url = new URL(`${basePath}${this.htmlPath}`, window.location.origin);
-    
+        const url = PageJS.Utils.resolveWithBasePath(this.htmlPath);
+
         const response = await fetch(url);
         const html = await response.text();
     
@@ -79,9 +79,10 @@ if(!PageJS.PageView){
 
 }
 
-}
 
-/*confirm-view.js*/window.PageJS = window.PageJS || {};
+
+/*confirm-view.js*/
+window.PageJS = window.PageJS || {};
 
 if(!PageJS.ConfirmView){
     PageJS.ConfirmView = class {
@@ -117,10 +118,8 @@ if(!PageJS.ConfirmView){
         }
     }
     async addHTML(rootElement) {
-        const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-        const basePath = window.location.origin + path;
-        const url = new URL(`${basePath}${this.htmlPath}`, window.location.origin);
-    
+        const url = PageJS.Utils.resolveWithBasePath(this.htmlPath);
+
         const response = await fetch(url);
         const html = await response.text();
     
@@ -148,9 +147,10 @@ if(!PageJS.ConfirmView){
 
 }
 
-}
 
-/*uicontroller.js*/window.PageJS = window.PageJS || {};
+
+/*uicontroller.js*/
+window.PageJS = window.PageJS || {};
 
 if (!PageJS.UIController) {
     PageJS.UIController = class {
@@ -510,7 +510,8 @@ if (!PageJS.UIController) {
         }
     }
 }
-/*startup.js*/window.PageJS = window.PageJS || {};
+/*startup.js*/
+window.PageJS = window.PageJS || {};
 
 if(!PageJS.Startup){
   PageJS.Startup = class{
@@ -523,14 +524,24 @@ if(!PageJS.Startup){
 }
 
 
-/*router.js*/window.PageJS = window.PageJS || {};
+/*router.js*/
+window.PageJS = window.PageJS || {};
 
 if (!PageJS.Router) {
   PageJS.Router = class {
     static async handleRouting({ autoResetUrl = true, delayBetweenSteps = 300, timeout = 5000, basePath } = {}) {
-      const pathSegments = window.location.pathname
+      PageJS.basePath = basePath || PageJS.basePath || "";
+      let pathSegments = window.location.pathname
         .split("/")
         .filter(p => p && p.trim());
+
+      if (PageJS.basePath) {
+        const baseParts = PageJS.basePath.split("/").filter(p => p && p.trim());
+        const maybeBase = pathSegments.slice(0, baseParts.length).join("/");
+        if (maybeBase === baseParts.join("/")) {
+          pathSegments = pathSegments.slice(baseParts.length);
+        }
+      }
 
       if (pathSegments.length === 0) return;
 
@@ -552,7 +563,8 @@ if (!PageJS.Router) {
     }
   };
 }
-/*utils.js*/window.PageJS = window.PageJS || {};
+/*utils.js*/
+window.PageJS = window.PageJS || {};
 
 if(!PageJS.Utils){
     PageJS.Utils = class{
@@ -645,9 +657,44 @@ if(!PageJS.Utils){
                 timeout = setTimeout(() => fn.apply(this, args), delay);
             };
         }
+
+        /**
+         * Geeft een absolute URL terug waarbij rekening wordt gehouden met de ingestelde basePath.
+         * @param {string} path
+         * @returns {string}
+         */
+        static resolveWithBasePath(path) {
+            if (/^https?:\/\//.test(path)) return path;
+            const base = (PageJS.basePath || "").replace(/\/$/, "");
+
+            let resolved;
+            if (path.startsWith("/")) {
+                if (base && path.startsWith(base + "/")) {
+                    resolved = window.location.origin + path;
+                } else {
+                    resolved = window.location.origin + base + path;
+                }
+            } else {
+                resolved = window.location.origin + base + "/" + path;
+            }
+            if (PageJS.appendVersion) {
+                resolved = PageJS.appendVersion(resolved);
+            }
+            return resolved;
+        }
     }
 }
-/*version.js*/window.PageJS = window.PageJS || {};
+/*version.js*/
+window.PageJS = window.PageJS || {};
+
+PageJS.VERSION = window.PageJS_VERSION || "1.0.1";
+if(!PageJS.appendVersion){
+    PageJS.appendVersion = function(url){
+        if(/^https?:\/\//.test(url)) return url;
+        const sep = url.includes('?') ? '&' : '?';
+        return url + sep + 'v=' + PageJS.VERSION;
+    };
+}
 
 if(!PageJS.VersionJS){
     PageJS.VersionJS = class {
@@ -661,7 +708,8 @@ if(!PageJS.VersionJS){
             try{
                 const link = document.querySelector('link[rel="manifest"]');
                 if(!link) throw new Error('Manifest link niet gevonden');
-                const response = await fetch(link.href + '?nocache=' + new Date().getTime());
+                const manifestUrl = PageJS.Utils.resolveWithBasePath(link.getAttribute('href'));
+                const response = await fetch(manifestUrl + '?nocache=' + new Date().getTime());
                 if(!response.ok) throw new Error('Manifest niet opgehaald');
                 const manifest = await response.json();
                 return manifest.version;
@@ -674,7 +722,8 @@ if(!PageJS.VersionJS){
             try {
                 let currentVersion;
                 if (window.VERSIONFILEPATH) {
-                    const response = await fetch(`${window.VERSIONFILEPATH}?nocache=` + new Date().getTime());
+                    const versionUrl = PageJS.Utils.resolveWithBasePath(window.VERSIONFILEPATH);
+                    const response = await fetch(`${versionUrl}?nocache=` + new Date().getTime());
                     const data = await response.json();
                     currentVersion = data.version;
                 } else {
@@ -726,4 +775,3 @@ if(!PageJS.VersionJS){
 PageJS.VersionJS.waitForVariable("VERSIONFILEPATH", () => {
     PageJS.VersionJS.checkVersionAndUpdateIfNeeded();
 });
-/*copyright*/

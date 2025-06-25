@@ -1,5 +1,14 @@
 window.PageJS = window.PageJS || {};
 
+PageJS.VERSION = window.PageJS_VERSION || "1.0.1";
+if(!PageJS.appendVersion){
+    PageJS.appendVersion = function(url){
+        if(/^https?:\/\//.test(url)) return url;
+        const sep = url.includes('?') ? '&' : '?';
+        return url + sep + 'v=' + PageJS.VERSION;
+    };
+}
+
 if(!PageJS.VersionJS){
     PageJS.VersionJS = class {
         static init(versionFilePath){

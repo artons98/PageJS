@@ -1,9 +1,20 @@
 (function(){
   const DEFAULT_BASE = "https://cdn.jsdelivr.net/gh/artons98/PageJS/";
+  const VERSION = "1.0.1";
+  window.PageJS_VERSION = VERSION;
 
   function ensureTrailingSlash(url){
     return url.endsWith('/') ? url : url + '/';
   }
+
+  function appendVersion(url){
+    if(url.startsWith('http')) return url;
+    const sep = url.includes('?') ? '&' : '?';
+    return url + sep + 'v=' + VERSION;
+  }
+
+  window.PageJS = window.PageJS || {};
+  window.PageJS.appendVersion = appendVersion;
 
   function getBaseUrl(){
     if (window.PageJS_BASE_URL) {
@@ -40,7 +51,8 @@
   function loadScript(file){
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = file.startsWith('http') ? file : BASE_URL + file;
+      const src = file.startsWith('http') ? file : BASE_URL + file;
+      script.src = appendVersion(src);
       script.type = 'text/javascript';
       script.onload = () => resolve(file + ' loaded.');
       script.onerror = () => reject(new Error(file + ' failed to load.'));
@@ -51,7 +63,8 @@
   function loadCSS(file){
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = file.startsWith('http') ? file : BASE_URL + file;
+    const href = file.startsWith('http') ? file : BASE_URL + file;
+    link.href = appendVersion(href);
     document.head.appendChild(link);
   }
 
