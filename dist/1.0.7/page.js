@@ -735,7 +735,7 @@ if(!PageJS.Utils){
                 return path; // Als het al een absolute URL is, retourneer het direct.
             }
             const base = (PageJS.basePath || "").replace(/\/$/, "");
-            
+            console.log(`[PageJS.Utils] Base path: ${base}`);
             if (path.startsWith("/")) {
                 if (base && path.startsWith(base + "/")) {
                     console.log(`[PageJS.Utils] Path begint met basePath: ${base}`);
