@@ -3,9 +3,14 @@ window.PageJS = window.PageJS || {};
 if(!PageJS.Startup){
   PageJS.Startup = class{
     constructor(){
-      PageJS.Utils.waitForFunction("OnStartup", (fn) => {
-        fn();
-      });
+      (async () => {
+        if(PageJS.Config && typeof PageJS.Config.initialize === 'function'){
+          await PageJS.Config.initialize();
+        }
+        PageJS.Utils.waitForFunction("OnStartup", (fn) => {
+          fn();
+        });
+      })();
     }
   }
 }
