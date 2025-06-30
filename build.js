@@ -1,6 +1,6 @@
 const fs = require('fs');
 const cfg = JSON.parse(fs.readFileSync('js-plurge.json','utf8'));
-const version = '1.0.3';
+const version = '1.0.20';
 let output = cfg.header || '';
 output += `/* Version: ${version} */\n`;
 for(const file of cfg.files){
