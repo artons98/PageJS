@@ -67,6 +67,11 @@ if(!PageJS.Utils){
         static async loadCachedAndFresh({ cacheKey, fetchFunction, applyFunction }) {
             const appName = await PageJS.Utils.getAppNameFromManifest();
             const fullCacheKey = `${appName}_${cacheKey}`;
+            const sanitizedKey = cacheKey
+                .replace(new RegExp(appName, 'gi'), '')
+                .replace(/_/g, ' ')
+                .replace(/cache/gi, '')
+                .trim();
             const cached = localStorage.getItem(fullCacheKey);
             if (cached) {
                 try {
@@ -79,7 +84,7 @@ if(!PageJS.Utils){
         
             let fresh;
             try {
-                fresh = await PageJS.UIController.visualizePromise(fetchFunction(), `Ophalen: ${fullCacheKey}`);
+                fresh = await PageJS.UIController.visualizePromise(fetchFunction(), `Ophalen: ${sanitizedKey}`);
             } catch (err) {
                 console.warn("UIController niet beschikbaar of fout tijdens visualisatie, fetch zonder visualisatie.");
                 fresh = await fetchFunction();
