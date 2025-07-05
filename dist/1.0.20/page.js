@@ -1,5 +1,5 @@
 /*PageJS by APDSoftware*/
-/* Version: 1.0.20 */
+/* Version: 1.0.19 */
 /*modalpage.js*/
 class Page{
     constructor(title, viewModel) {
@@ -524,7 +524,11 @@ if(!PageJS.Config){
             prodBaseUrl: '',
             devBaseUrl: '',
             handleRouting: true,
-            basePath: ''
+            basePath: '',
+            version: '1.0.0',
+            replaceContent: true,
+            appName: 'APDSoftware-App',
+            modules: ["Products", "Orders", "Invoices", "Email", "Gallery", "Analytics", "Settings", "Inspections", "Trading"]
         };
 
         static async initialize(){
@@ -532,7 +536,7 @@ if(!PageJS.Config){
             const pathSegments = window.location.pathname.split('/').filter(s => s && !s.includes('.'));
             for(let i = pathSegments.length; i >= 0; i--){
                 const subPath = '/' + pathSegments.slice(0, i).join('/') + (i > 0 ? '/' : '');
-                const url = origin + subPath + 'pagejs-config.json';
+                const url = origin + subPath + 'assets/js/pagejs-config.json';
                 try{
                     const response = await fetch(url);
                     if(response.ok){
@@ -544,6 +548,12 @@ if(!PageJS.Config){
                             window.PageJS_BASE_URL = this.settings.devBaseUrl;
                         }else if(!isDev && this.settings.prodBaseUrl){
                             window.PageJS_BASE_URL = this.settings.prodBaseUrl;
+                        }
+                        console.info(`[PageJS.Config] pagejs-config.json gevonden op ${url}`);
+                        console.info(`[PageJS.Config] Instellingen:`, this.settings);
+                        // Modules tonen na laden van settings
+                        if (window.PageJS && PageJS.Utils && typeof PageJS.Utils.showEnabledModules === "function") {
+                            PageJS.Utils.showEnabledModules();
                         }
                         return;
                     }
@@ -563,12 +573,28 @@ if(!PageJS.Startup){
   PageJS.Startup = class{
     constructor(){
       (async () => {
-        if(PageJS.Config && typeof PageJS.Config.initialize === 'function'){
-          await PageJS.Config.initialize();
+        await PageJS.Config.initialize();
+        if(PageJS.Config.settings && PageJS.Config.settings.logo){
+            PageJS.Utils.applyLogoFromSettings();
         }
-        if(PageJS.Config && PageJS.Config.settings && PageJS.Config.settings.logo){
-          PageJS.Utils.applyLogoFromSettings();
+        if(PageJS.Config.settings.replaceContent){
+            PageJS.Utils.replaceContentFromSettings();
+            const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    if (mutation.target instanceof Element) {
+                        PageJS.Utils.replaceContentFromSettings(mutation.target);
+                    }
+                }
+            }
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true // Belangrijk als je ook toevoegingen diep in de DOM wilt volgen
+            });
         }
+        await PageJS.Version.checkVersionAndUpdateIfNeeded();
         PageJS.Utils.waitForFunction("OnStartup", (fn) => {
           fn();
         });
@@ -649,24 +675,19 @@ if(!PageJS.Utils){
         static waitForFunction = (name, callback, timeout = 10000) => {
             const interval = 100;
             let waited = 0;
-
-            function getNestedProperty(path) {
-                return path.split('.').reduce((obj, key) => obj && obj[key], window);
-            }
-
+          
             const check = () => {
-                const fn = getNestedProperty(name);
-                if (typeof fn === 'function') {
+                if (typeof window[name] === 'function') {
                     console.log(`[PageJS] Functie ${name} is beschikbaar en wordt uitgevoerd!`);
                     clearInterval(timer);
-                    callback(fn);
+                    callback(window[name]);
                 } else if (waited >= timeout) {
                     clearInterval(timer);
                     console.warn(`[PageJS] Timeout: functie ${name} is niet gevonden`);
                 }
                 waited += interval;
             };
-
+          
             const timer = setInterval(check, interval);
           };
       
@@ -681,20 +702,61 @@ if(!PageJS.Utils){
                 const response = await fetch(manifestUrl);
                 if (!response.ok) throw new Error("Manifest niet opgehaald");
                 const manifest = await response.json();
-                return manifest.name || manifest.short_name || 'APDSoftware-App';
+                //console.info("App naam uit manifest:", manifest.name || manifest.short_name || 'APDSoftware-App');
+                return manifest.name || manifest.short_name || "";
             } catch (e) {
                 console.warn("Fout bij ophalen app naam uit manifest:", e);
-                return 'APDSoftware-App';
+                return "";
+            }
+        }
+        static getAppNameFromConfig(){
+            if (PageJS.Config && PageJS.Config.settings && PageJS.Config.settings.appName) {
+                return PageJS.Config.settings.appName;
+            }
+            return "";
+        }
+        static async getAppName(){
+            const appName = this.getAppNameFromConfig();
+            if (appName && appName.trim() !== "") {
+                return appName;
+            }
+            appName = await PageJS.Utils.getAppNameFromManifest();
+            if (appName && appName.trim() !== "") {
+                return appName;
+            }
+            console.warn("Geen app naam gevonden in configuratie of manifest, gebruik standaard 'APDSoftware-App'.");
+            return 'APDSoftware-App';
+        }
+        static async replaceContentFromSettings(element = null) {
+            if(element !== null) {
+                if (!element.hasAttribute('data-replace-content')) {
+                    return;
+                }
+                const settingName = element.getAttribute("data-replace-content");
+                const settingValue = PageJS.Config && PageJS.Config.settings ? PageJS.Config.settings[settingName] : null;
+                if (settingValue !== null && settingValue !== undefined) {
+                    element.innerText = settingValue;
+                } else {
+                    console.warn(`Geen waarde gevonden voor instelling "${settingName}"`);
+                }
+                return;
+            }
+            const elements = document.querySelectorAll("[data-replace-content]");
+            if (elements.length === 0) return;
+            for (const el of elements) {
+                const settingName = el.getAttribute("data-replace-content");
+                if (!settingName) continue;
+                const settingValue = PageJS.Config && PageJS.Config.settings ? PageJS.Config.settings[settingName] : null;
+                if (settingValue !== null && settingValue !== undefined) {
+                    el.innerText = settingValue;
+                } else {
+                    console.warn(`Geen waarde gevonden voor instelling "${settingName}"`);
+                }
             }
         }
         static async loadCachedAndFresh({ cacheKey, fetchFunction, applyFunction }) {
-            const appName = await PageJS.Utils.getAppNameFromManifest();
+            const appName = await PageJS.Utils.getAppName();
             const fullCacheKey = `${appName}_${cacheKey}`;
-            const sanitizedKey = cacheKey
-                .replace(new RegExp(appName, 'gi'), '')
-                .replace(/_/g, ' ')
-                .replace(/cache/gi, '')
-                .trim();
             const cached = localStorage.getItem(fullCacheKey);
             if (cached) {
                 try {
@@ -707,7 +769,7 @@ if(!PageJS.Utils){
         
             let fresh;
             try {
-                fresh = await PageJS.UIController.visualizePromise(fetchFunction(), `Ophalen: ${sanitizedKey}`);
+                fresh = await PageJS.UIController.visualizePromise(fetchFunction(), `Ophalen: ${fullCacheKey}`);
             } catch (err) {
                 console.warn("UIController niet beschikbaar of fout tijdens visualisatie, fetch zonder visualisatie.");
                 fresh = await fetchFunction();
@@ -724,6 +786,32 @@ if(!PageJS.Utils){
                 clearTimeout(timeout);
                 timeout = setTimeout(() => fn.apply(this, args), delay);
             };
+        }
+
+        /**
+         * Geeft een absolute URL terug waarbij rekening wordt gehouden met de ingestelde basePath.
+         * @param {string} path
+         * @returns {string}
+         */
+        static resolveWithBasePath(path) {
+            //console.log(`[PageJS.Utils] Resolving path: ${path}`);
+            if (/^https?:\/\//.test(path)){
+                //console.log(`[PageJS.Utils] Path is al een absolute URL: ${path}`);
+                return path; // Als het al een absolute URL is, retourneer het direct.
+            }
+            const base = (PageJS.basePath || "").replace(/\/$/, "");
+            //console.log(`[PageJS.Utils] Base path: ${base}`);
+            if (path.startsWith("/")) {
+                if (base && path.startsWith(base + "/")) {
+                    //console.log(`[PageJS.Utils] Path begint met basePath: ${base}`);
+                    return window.location.origin + path;
+                }
+                //console.log(`[PageJS.Utils] Path begint met een slash, maar niet met basePath: ${base}`);
+                return window.location.origin + base + path;
+
+            }
+            //console.log(`[PageJS.Utils] Path begint niet met een slash: ${path}`);
+            return window.location.origin + base + "/" + path;
         }
 
         static applyLogoFromSettings() {
@@ -751,21 +839,17 @@ if(!PageJS.Utils){
         }
 
         /**
-         * Geeft een absolute URL terug waarbij rekening wordt gehouden met de ingestelde basePath.
-         * @param {string} path
-         * @returns {string}
+         * Maakt elementen zichtbaar waarvan het data-module-id voorkomt in PageJS.Config.settings.modules.
          */
-        static resolveWithBasePath(path) {
-            if (/^https?:\/\//.test(path)) return path;
-            const base = (PageJS.basePath || "").replace(/\/$/, "");
-
-            if (path.startsWith("/")) {
-                if (base && path.startsWith(base + "/")) {
-                    return window.location.origin + path;
+        static showEnabledModules() {
+            if (!PageJS.Config || !PageJS.Config.settings || !Array.isArray(PageJS.Config.settings.modules)) return;
+            const enabledModules = PageJS.Config.settings.modules;
+            document.querySelectorAll('[data-module-id]').forEach(el => {
+                const moduleId = el.getAttribute('data-module-id');
+                if (enabledModules.includes(moduleId)) {
+                    el.classList.remove('visually-hidden');
                 }
-                return window.location.origin + base + path;
-            }
-            return window.location.origin + base + "/" + path;
+            });
         }
     }
 }
@@ -803,8 +887,12 @@ if(!PageJS.Version){
                     const response = await fetch(`${versionUrl}?nocache=` + new Date().getTime());
                     const data = await response.json();
                     currentVersion = data.version;
+                }else if (PageJS.Config.settings){
+                    currentVersion = PageJS.Config.settings.version;
+                    console.info("Huidige versie uit configuratie:", currentVersion);
                 } else {
                     currentVersion = await this.getVersionFromManifest();
+                    console.info("Huidige versie uit manifest:", currentVersion);
                 }
                 if(!currentVersion) return;
                 const savedVersion = localStorage.getItem('siteVersion');
@@ -849,8 +937,11 @@ if(!PageJS.Version){
     }
 }
 
-PageJS.Version.waitForVariable("VERSIONFILEPATH", () => {
-    PageJS.Version.checkVersionAndUpdateIfNeeded();
-});
+// PageJS.Version.waitForVariable("VERSIONFILEPATH", () => {
+//     PageJS.Version.checkVersionAndUpdateIfNeeded();
+// });
+if (window.PageJS && PageJS.Startup) {
+    new PageJS.Startup();
+}
 
 /*copyright*/

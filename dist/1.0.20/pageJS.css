@@ -200,15 +200,15 @@ html.no-scroll, body.no-scroll {
   }
 } */
 
-html.light-theme .pageJS-container,
-html.light-theme .pageJS-container__title-bar,
-html.light-theme .pageJS-container__content {
+html[data-bs-theme="light"] .pageJS-container,
+html[data-bs-theme="light"] .pageJS-container__title-bar,
+html[data-bs-theme="light"] .pageJS-container__content {
     background-color: var(--bs-light);
 }
 
-html.dark-theme .pageJS-container,
-html.dark-theme .pageJS-container__title-bar,
-html.dark-theme .pageJS-container__content {
+html[data-bs-theme="dark"] .pageJS-container,
+html[data-bs-theme="dark"] .pageJS-container__title-bar,
+html[data-bs-theme="dark"] .pageJS-container__content {
     background-color: var(--bs-dark);
 }
 
