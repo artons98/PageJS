@@ -69,8 +69,9 @@ if(!PageJS.Utils){
             const fullCacheKey = `${appName}_${cacheKey}`;
             const sanitizedKey = cacheKey
                 .replace(new RegExp(appName, 'gi'), '')
-                .replace(/_/g, ' ')
-                .replace(/cache/gi, '')
+                .split('_')
+                .filter(p => p && !/^(cache|cached)$/i.test(p))
+                .join(' ')
                 .trim();
             const cached = localStorage.getItem(fullCacheKey);
             if (cached) {
